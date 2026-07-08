@@ -30,6 +30,12 @@
   - `src/pages/UseCaseCatalog.jsx` — banner heading → "Supply Chain Resilience Signals for Kroger's Network" and subtitle → "Network Flow & Resilience · MEIO optimization · reroute, rebalance & premium-freight avoidance".
 
 ### Added
+- **Store Service Risk — 7-screen guided flow** (new). Clicking Run scenario on the "Store Service Risk — At-Risk Replenishment Orders" alert (guided mode) now runs a purpose-built 7-step workflow: Signal Analysis → Objectives & KPIs → Simulation Levers → Simulation Summary → Optimization Results → Approval & Execution → Learn & Save Scenario.
+  - `src/data/storeServiceRisk.js` — new. 7 simulation levers (MEIO rebalance, allocation resequencing, transportation reroute, selective expedited logistics, safety-stock uplift, service target, recovery window), each with a `recommended` value; `SSR_RECOMMENDED_DEFAULTS` seeds the page defaults so **every lever defaults to its recommended value**. Plus KPIs (baseline vs target), objectives, ranked plans, execution checklist, and per-screen loading lines.
+  - `src/components/workflow/panels/StoreServiceRiskPanel.jsx` — new. Single panel rendering all 7 screens via `panelData.screen`, each with its own supply-chain-context loading transition. Levers read/write `workflowState.ssrLevers` (defaulted to recommended) with a "Reset to recommended" control; deterministic projection vs a do-nothing baseline on the summary screen; recommended plan pre-selected; human approval gate on screen 6.
+  - `src/components/workflow/WorkflowRunner.jsx` — registered `store_service_risk` panelType.
+  - `src/data/usecases.js` — added `UC_STORE_SERVICE_RISK` (7 steps) to `useCases`.
+  - `src/pages/UseCaseCatalog.jsx` — Store Service Risk signal now links to `uc-store-service-risk`.
 - **CI build automation** (`.github/workflows/ci.yml`) — runs `npm install --legacy-peer-deps` + `npm run build` on every `pull_request` to `main` and every push to `main` / `claude/**`, plus manual dispatch. Gives every PR a visible build check without a manual local build.
 
 ### Fixed

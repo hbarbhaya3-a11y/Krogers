@@ -1014,7 +1014,35 @@ const UC_ROLLOVER = {
   ],
 }
 
+// ── Store Service Risk — At-Risk Replenishment Orders (7-screen guided flow) ─
+// Every step renders StoreServiceRiskPanel, selected by panelData.screen.
+const SSR_STEP = (n, id, label, stage, agent, actor = 'agent') => ({
+  id, label, stage, page: 'market-signals', panelType: 'store_service_risk', actor, agent,
+  headline: label, panelData: { screen: n },
+})
+const UC_STORE_SERVICE_RISK = {
+  id: 'uc-store-service-risk',
+  title: 'Store Service Risk — At-Risk Replenishment Orders',
+  subtitle: 'Protect store service via MEIO rebalance, allocation resequencing, reroute, and selective expedited logistics',
+  color: 'orange',
+  outcome: 'Service attainment protected',
+  outcomeDetail: 'Service attainment, stockout probability, premium freight, recovery time',
+  duration: '24–72 hr service window',
+  variants: '7 levers · 3 recovery plans',
+  agentChain: ['Market Sentinel', 'Context Decoder', 'TwinX Simulation', 'Decision Owner', 'Learning System'],
+  steps: [
+    SSR_STEP(1, 'ssr-1', 'Signal Analysis', 'SENSE', 'Market Sentinel'),
+    SSR_STEP(2, 'ssr-2', 'Objectives & KPIs', 'SENSE', 'Context Decoder'),
+    SSR_STEP(3, 'ssr-3', 'Simulation Levers', 'SIMULATE', 'TwinX Simulation'),
+    SSR_STEP(4, 'ssr-4', 'Simulation Summary', 'SIMULATE', 'TwinX Simulation'),
+    SSR_STEP(5, 'ssr-5', 'Optimization Results', 'SELECT', 'TwinX Simulation'),
+    SSR_STEP(6, 'ssr-6', 'Approval & Execution', 'EXECUTE', 'Decision Owner', 'human'),
+    SSR_STEP(7, 'ssr-7', 'Learn & Save Scenario', 'LEARN', 'Learning System'),
+  ],
+}
+
 export const useCases = [
+  UC_STORE_SERVICE_RISK,
   UC_ADVISORY_READINESS,
   UC_IDLE_CASH,
   UC_DIVERSIFICATION,

@@ -33,6 +33,7 @@ import TrialValidationPanel from './panels/TrialValidationPanel'
 import ParticipantSegmentationPanel from './panels/ParticipantSegmentationPanel'
 import ParticipantChannelConfigPanel from './panels/ParticipantChannelConfigPanel'
 import CampaignObjectivePanel from './panels/CampaignObjectivePanel'
+import StoreServiceRiskPanel from './panels/StoreServiceRiskPanel'
 
 const STAGE_COLORS = { SENSE: 'teal', SIMULATE: 'violet', GOVERN: 'red', DEPLOY_LEARN: 'green' }
 
@@ -356,6 +357,7 @@ export default function WorkflowRunner({ onExitWorkflow }) {
       case 'participant_segmentation':  return <ParticipantSegmentationPanel {...commonProps} />
       case 'participant_channel_config': return <ParticipantChannelConfigPanel {...commonProps} />
       case 'campaign_objective': return <CampaignObjectivePanel panelData={currentStep.panelData} onContinue={handleContinue} />
+      case 'store_service_risk': return <StoreServiceRiskPanel {...commonProps} />
       default:                           return <PlaceholderPanel {...commonProps} />
     }
   }
