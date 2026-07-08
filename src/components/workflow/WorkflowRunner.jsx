@@ -357,7 +357,7 @@ export default function WorkflowRunner({ onExitWorkflow }) {
       case 'participant_segmentation':  return <ParticipantSegmentationPanel {...commonProps} />
       case 'participant_channel_config': return <ParticipantChannelConfigPanel {...commonProps} />
       case 'campaign_objective': return <CampaignObjectivePanel panelData={currentStep.panelData} onContinue={handleContinue} />
-      case 'store_service_risk': return <StoreServiceRiskPanel {...commonProps} />
+      case 'store_service_risk': return <StoreServiceRiskPanel {...commonProps} onExit={onExitWorkflow || exit} />
       default:                           return <PlaceholderPanel {...commonProps} />
     }
   }

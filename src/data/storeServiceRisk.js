@@ -181,6 +181,11 @@ export const SSR_RECOMMENDATIONS = [
   {
     id: 'meio', rank: 2, tone: 'violet', recommended: false,
     cardTitle: 'Recommendation 1: Rebalance Available Inventory Before Expediting',
+    trigger: 'Alternative inventory exists upstream but is not positioned to protect at-risk stores.',
+    leversUsed: 'MEIO transfer/rebalance · allocation resequencing · reorder-point uplift for priority pairs',
+    impacted: '~78 priority stores · 6 SKU families · 4 servicing DCs',
+    confidence: '88% · ±3.2 pts service attainment',
+    whyNot: 'Alone it does not fix lane-level ETA breaches, so pure transport-constrained stores stay exposed.',
     recommends: [
       'Move available inventory from upstream/alternate nodes to stores with highest stockout probability.',
       'Resequence allocation so constrained inventory goes first to priority store/SKU combinations.',
@@ -200,6 +205,11 @@ export const SSR_RECOMMENDATIONS = [
   {
     id: 'reroute', rank: 3, tone: 'teal', recommended: false,
     cardTitle: 'Recommendation 2: Reroute Critical Replenishment Orders',
+    trigger: 'Replenishment ETAs breach the service window on constrained lanes.',
+    leversUsed: 'Priority reroute · pre-approved alternate lanes · carrier swap for at-risk loads',
+    impacted: '~64 priority stores · 27 at-risk loads · 9 lanes',
+    confidence: '85% · ±3.6 pts service attainment',
+    whyNot: 'Does not reposition inventory, so stores with no upstream cover remain at risk.',
     recommends: [
       'Reroute replenishment loads for priority stores through feasible alternate lanes and eligible carriers.',
       'Keep non-urgent replenishment on the current route plan.',
@@ -219,8 +229,14 @@ export const SSR_RECOMMENDATIONS = [
   {
     id: 'combined', rank: 1, tone: 'green', recommended: true,
     cardTitle: 'Recommendation 3: Combined Service Protection Recovery',
+    trigger: 'No single lever fully protects service without cost or feasibility trade-offs.',
+    leversUsed: 'MEIO rebalance → priority reroute → selective premium freight (cap top 10–15% critical)',
+    impacted: '126 priority stores · 8 SKU families · all servicing DCs · 9 lanes',
+    confidence: '90% · ±2.4 pts service attainment',
+    whyNot: 'Highest coordination cost and requires cross-functional approval vs single-lever plans.',
     recommends: [
       'Use MEIO rebalance first, priority reroute second, and premium freight only for critical unrecoverable store/SKU cases.',
+      'Sequence actions so the lowest-cost recovery is exhausted before any expedite is triggered.',
     ],
     kpi: [
       { k: 'Service attainment', b: '92.4%', a: '98.1%', d: '+5.7 pts' },
@@ -249,8 +265,6 @@ export const SSR_APPROVAL = {
   summary: [
     { field: 'Decision owner', value: 'Planning lead / supply chain planner' },
     { field: 'Approval type', value: 'Human approval required' },
-    { field: 'Execution mode', value: 'Recommendation-led workflow' },
-    { field: 'Execution target', value: 'Planning / replenishment / TMS / WMS workflow handoff' },
     { field: 'Auto-execution', value: 'Disabled for Wave 1' },
     { field: 'Audit status', value: 'Decision log will be created' },
   ],
