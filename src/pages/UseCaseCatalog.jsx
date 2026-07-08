@@ -35,7 +35,7 @@ const STEP_ICONS = {
 const LIVE_SIGNALS = [
   {
     ucId: 'uc-store-service-risk',
-    linkedUseCaseId: 'uc-volatility-reassurance',
+    linkedUseCaseId: 'uc-store-service-risk',
     severity: 'HIGH',
     severityColor: 'orange',
     stage: 'SENSE',
