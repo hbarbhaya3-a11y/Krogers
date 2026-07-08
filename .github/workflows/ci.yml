@@ -1,24 +1,25 @@
-name: Deploy to GitHub Pages
+name: CI
 
+# Runs the production build automatically so every push and pull request gets a
+# visible build check — no manual `npm run build` needed.
 on:
-  push:
+  pull_request:
     branches: [main]
+  push:
+    branches:
+      - main
+      - 'claude/**'
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build-and-deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,15 +39,3 @@ jobs:
           LLM_PROVIDER: openai
           LLM_MODEL: gpt-4o-mini
           VITE_AUTH_API_URL: ""
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4

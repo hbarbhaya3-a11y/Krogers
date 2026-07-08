@@ -35,6 +35,9 @@ const STEP_ICONS = {
 const LIVE_SIGNALS = [
   {
     ucId: 'uc-supplier-delay-surge',
+    // Links to an existing workflow so Run scenario opens the Guided/Autopilot
+    // modal today; these target pages get re-skinned in a later prompt.
+    linkedUseCaseId: 'uc-advisory-readiness',
     severity: 'HIGH',
     severityColor: 'orange',
     stage: 'SENSE',
@@ -63,6 +66,7 @@ const LIVE_SIGNALS = [
   },
   {
     ucId: 'uc-dc-capacity-stress',
+    linkedUseCaseId: 'uc-idle-cash',
     severity: 'HIGH',
     severityColor: 'orange',
     stage: 'SENSE',
@@ -91,6 +95,7 @@ const LIVE_SIGNALS = [
   },
   {
     ucId: 'uc-premium-freight-risk',
+    linkedUseCaseId: 'uc-diversification',
     severity: 'MEDIUM-HIGH',
     severityColor: 'yellow',
     stage: 'SENSE',
@@ -119,6 +124,7 @@ const LIVE_SIGNALS = [
   },
   {
     ucId: 'uc-store-service-risk',
+    linkedUseCaseId: 'uc-volatility-reassurance',
     severity: 'HIGH',
     severityColor: 'orange',
     stage: 'SENSE',
@@ -147,6 +153,7 @@ const LIVE_SIGNALS = [
   },
   {
     ucId: 'uc-inventory-imbalance',
+    linkedUseCaseId: 'uc-rollover-ira',
     severity: 'MEDIUM',
     severityColor: 'blue',
     stage: 'SENSE',
@@ -276,8 +283,11 @@ export default function UseCaseCatalog({ onRunScenario }) {
     else launch(uc)
   }
 
-  const handleRunByTitle = (scenarioTitle) => {
-    const uc = useCases.find(u => u.title === scenarioTitle)
+  const handleRunSignalScenario = (signal) => {
+    // Resolve the signal to an existing workflow — prefer the explicit link,
+    // fall back to matching the scenario name to a use-case title.
+    const uc = useCases.find(u => u.id === signal.linkedUseCaseId)
+      || useCases.find(u => u.title === signal.scenario)
     if (uc) handleRun(uc)
   }
 
@@ -488,7 +498,7 @@ export default function UseCaseCatalog({ onRunScenario }) {
                     color="vanguardRed"
                     radius="md"
                     leftSection={<IconPlayerPlay size={12} stroke={1.8} />}
-                    onClick={() => handleRunByTitle(selectedSignal.scenario)}
+                    onClick={() => handleRunSignalScenario(selectedSignal)}
                   >
                     Run scenario
                   </Button>
