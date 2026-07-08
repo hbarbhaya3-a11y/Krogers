@@ -64,7 +64,7 @@ const LIVE_SIGNALS = [
   },
   {
     ucId: 'uc-inventory-imbalance',
-    linkedUseCaseId: 'uc-rollover-ira',
+    linkedUseCaseId: 'uc-store-service-risk',
     severity: 'MEDIUM',
     severityColor: 'blue',
     stage: 'SENSE',
@@ -95,7 +95,7 @@ const LIVE_SIGNALS = [
     ucId: 'uc-supplier-delay-surge',
     // Links to an existing workflow so Run scenario opens the Guided/Autopilot
     // modal today; these target pages get re-skinned in a later prompt.
-    linkedUseCaseId: 'uc-advisory-readiness',
+    linkedUseCaseId: 'uc-store-service-risk',
     severity: 'HIGH',
     severityColor: 'orange',
     stage: 'SENSE',
@@ -124,7 +124,7 @@ const LIVE_SIGNALS = [
   },
   {
     ucId: 'uc-dc-capacity-stress',
-    linkedUseCaseId: 'uc-idle-cash',
+    linkedUseCaseId: 'uc-store-service-risk',
     severity: 'HIGH',
     severityColor: 'orange',
     stage: 'SENSE',
@@ -153,7 +153,7 @@ const LIVE_SIGNALS = [
   },
   {
     ucId: 'uc-premium-freight-risk',
-    linkedUseCaseId: 'uc-diversification',
+    linkedUseCaseId: 'uc-store-service-risk',
     severity: 'MEDIUM-HIGH',
     severityColor: 'yellow',
     stage: 'SENSE',
