@@ -29,6 +29,9 @@
   - `package.json` — `name` → `supply-os-for-kroger`, description updated.
   - `src/pages/UseCaseCatalog.jsx` — banner heading → "Supply Chain Resilience Signals for Kroger's Network" and subtitle → "Network Flow & Resilience · MEIO optimization · reroute, rebalance & premium-freight avoidance".
 
+### Fixed
+- **Application URL not loading (blank page when served at domain root)** — `vite.config.js` had `base: '/md/'` (a leftover from the "Sync KCC branch from md repository" import). Both deploy configs serve the SPA at the domain root (`firebase.json` → `public: dist` with rewrite to `/index.html`; `nginx.conf` → `location /`), so the built `index.html` requested its assets from `/md/assets/…`, which 404'd and fell through the SPA rewrite to `index.html` (HTML served for `.js` requests) → browser refused to execute → blank page. Changed `base` to `'./'` (relative). Verified: serving `dist/` at root now returns the app HTML and loads `./assets/*.js` with `text/javascript`. Navigation is state-based (no URL routing), so a relative base is safe at root or under any path prefix.
+
 ### Watch List
 - **Run-scenario wiring** — the five new scenario names (Supplier Delay Recovery, DC Capacity Shift Simulation, Premium Freight Avoidance, Service Protection Simulation, MEIO Rebalance Simulation) do not yet exist in `src/data/usecases.js`, so the "Run scenario" button is currently a no-op. Downstream workflow panels still carry Vanguard copy. Per user direction these page-level changes are deferred to follow-up prompts.
 - TwinX engine branding retained intentionally ("Powered by TwinX™").
