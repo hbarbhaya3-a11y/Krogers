@@ -1,6 +1,6 @@
 {
-    "name": "twinx-for-vanguard",
-    "description": "TwinX for Vanguard — Decision & Orchestration Intelligence Platform for US Workplace Retirement and Wealth Advisory.",
+    "name": "supply-os-for-kroger",
+    "description": "Supply OS for Kroger Supply Chain Resilience — Decision & Orchestration Intelligence Platform for Network Flow, Resilience, and MEIO across supplier, DC, transport, and store flows.",
     "private": true,
     "version": "0.1.0",
     "type": "module",
