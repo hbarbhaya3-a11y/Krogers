@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react'
 import {
   Paper, Stack, Group, Text, Badge, SimpleGrid, Progress, Divider, Button,
   ThemeIcon, Select, MultiSelect, Switch, Table, Alert, Loader, Box, List,
+  Modal, ScrollArea,
 } from '@mantine/core'
 import {
   IconRadar, IconTargetArrow, IconAdjustments, IconChartBar, IconTrophy,
   IconShieldCheck, IconDeviceFloppy, IconCheck, IconChevronRight, IconRefresh,
   IconAlertTriangle, IconBolt, IconArrowRight, IconFileExport, IconRoute,
+  IconDownload, IconX, IconFileText,
 } from '@tabler/icons-react'
 import { useUseCase } from '../../../contexts/UseCaseContext'
 import * as D from '../../../data/storeServiceRisk'
@@ -55,6 +57,82 @@ function ContinueButton({ onClick, label = 'Continue', icon }) {
       rightSection={icon || <IconChevronRight size={16} stroke={2} />} onClick={onClick} style={{ alignSelf: 'flex-end' }}>
       {label}
     </Button>
+  )
+}
+
+// ── Strategy plan — build downloadable text + modal ─────────────────────────
+function planToText(r) {
+  const p = r.plan
+  const L = [`# ${p.title}`, '', `Recommendation: ${r.cardTitle}`, '', `Objective`, p.objective, '', `Phased actions`]
+  p.phases.forEach(ph => { L.push('', ph.name); ph.actions.forEach(a => L.push(`  - ${a}`)) })
+  L.push('', 'Changes')
+  p.changes.forEach(c => L.push(`  - ${c.area}: ${c.change}`))
+  L.push('', 'Guardrails')
+  p.guardrails.forEach(g => L.push(`  - ${g}`))
+  L.push('', 'Expected impact', p.expected)
+  return L.join('\n')
+}
+
+function downloadPlan(r) {
+  const blob = new Blob([planToText(r)], { type: 'text/markdown;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = r.plan.title.replace(/[^\w]+/g, '_').replace(/^_+|_+$/g, '') + '.md'
+  document.body.appendChild(a); a.click(); a.remove()
+  URL.revokeObjectURL(url)
+}
+
+function StrategyModal({ reco, onClose }) {
+  const p = reco?.plan
+  return (
+    <Modal
+      opened={!!reco} onClose={onClose} size="lg" radius="md" withCloseButton={false}
+      title={
+        <Group justify="space-between" wrap="nowrap" w="100%">
+          <Group gap="xs" wrap="nowrap">
+            <ThemeIcon size="sm" variant="light" color={reco?.tone || 'orange'} radius="sm"><IconFileText size={14} /></ThemeIcon>
+            <Text fw={700} size="sm">{p?.title}</Text>
+          </Group>
+          <Group gap="xs" wrap="nowrap">
+            <Button size="xs" color={reco?.tone || 'orange'} leftSection={<IconDownload size={14} />} onClick={() => downloadPlan(reco)}>Download</Button>
+            <Button size="xs" variant="light" color="gray" leftSection={<IconX size={14} />} onClick={onClose}>Close</Button>
+          </Group>
+        </Group>
+      }
+      styles={{ title: { width: '100%' }, header: { alignItems: 'flex-start' } }}
+    >
+      {p && (
+        <ScrollArea.Autosize mah="65vh">
+          <Stack gap="md" pr="sm">
+            <Box><Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={2}>Objective</Text><Text size="sm">{p.objective}</Text></Box>
+            <Box>
+              <Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>Phased actions</Text>
+              <Stack gap="xs">
+                {p.phases.map(ph => (
+                  <Paper key={ph.name} withBorder p="sm" radius="md" style={{ borderLeft: `3px solid var(--mantine-color-${reco.tone}-5)` }}>
+                    <Text size="xs" fw={700} mb={4}>{ph.name}</Text>
+                    <List size="xs" spacing={2}>{ph.actions.map((a, i) => <List.Item key={i}>{a}</List.Item>)}</List>
+                  </Paper>
+                ))}
+              </Stack>
+            </Box>
+            <Box>
+              <Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>What changes</Text>
+              <Table fz="xs" withTableBorder withColumnBorders>
+                <Table.Thead><Table.Tr><Table.Th>Area</Table.Th><Table.Th>Change</Table.Th></Table.Tr></Table.Thead>
+                <Table.Tbody>{p.changes.map(c => <Table.Tr key={c.area}><Table.Td fw={600}>{c.area}</Table.Td><Table.Td>{c.change}</Table.Td></Table.Tr>)}</Table.Tbody>
+              </Table>
+            </Box>
+            <Box>
+              <Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>Guardrails</Text>
+              <Group gap={6} wrap="wrap">{p.guardrails.map(g => <Badge key={g} size="xs" variant="light" color={reco.tone}>{g}</Badge>)}</Group>
+            </Box>
+            <Alert color={reco.tone} variant="light" p="xs"><Text size="xs"><b>Expected impact:</b> {p.expected}</Text></Alert>
+          </Stack>
+        </ScrollArea.Autosize>
+      )}
+    </Modal>
   )
 }
 
@@ -233,7 +311,7 @@ function Screen4({ onContinue }) {
 }
 
 // ══════════════════ Screen 5 — Simulation Results ═══════════════════════════
-function RecoCard({ r, selected, onSelect }) {
+function RecoCard({ r, selected, onSelect, onViewPlan }) {
   return (
     <Paper withBorder p="md" radius="md" onClick={onSelect}
       style={{ cursor: 'pointer', borderColor: selected ? `var(--mantine-color-${r.tone}-6)` : undefined, background: selected ? `var(--mantine-color-${r.tone}-light)` : undefined, borderLeft: `3px solid var(--mantine-color-${r.tone}-5)` }}>
@@ -259,14 +337,24 @@ function RecoCard({ r, selected, onSelect }) {
       <Text size="10px" mt={4}><b>Best used when:</b> {r.bestWhen}</Text>
       <Text size="10px" c="orange" mt={2}><b>Risk:</b> {r.risk}</Text>
       <Text size="10px" c="dimmed" mt={2}><b>Why not alternatives:</b> {r.whyNot}</Text>
-      {selected && <Badge mt="sm" size="xs" color={r.tone} variant="light" leftSection={<IconCheck size={10} />}>Selected</Badge>}
+      <Group justify="space-between" align="center" mt="sm">
+        {selected
+          ? <Badge size="xs" color={r.tone} variant="light" leftSection={<IconCheck size={10} />}>Selected</Badge>
+          : <span />}
+        <Button size="xs" variant="light" color={r.tone} leftSection={<IconFileText size={13} />}
+          onClick={(e) => { e.stopPropagation(); onViewPlan(r) }}>
+          View strategy details
+        </Button>
+      </Group>
     </Paper>
   )
 }
 function Screen5({ ws, setWs, onContinue }) {
   const selId = ws.ssrRecoId ?? 'combined'
+  const [planReco, setPlanReco] = useState(null)
   return (
     <Stack gap="md">
+      <StrategyModal reco={planReco} onClose={() => setPlanReco(null)} />
       <Alert color="gray" variant="light" p="xs"><Text size="10px">Demo-ready illustrative values calibrated to the source-defined KPIs and levers; the source documents provide KPI categories and value levers but not this signal's exact run output.</Text></Alert>
       <Paper withBorder p="md" radius="md">
         <Text fw={700} size="xs" mb="xs">Baseline snapshot — current plan</Text>
@@ -278,7 +366,7 @@ function Screen5({ ws, setWs, onContinue }) {
       </Paper>
       <SectionHead icon={IconTrophy} title="Optimization recommendations" />
       {D.SSR_RECOMMENDATIONS.map(r => (
-        <RecoCard key={r.id} r={r} selected={r.id === selId} onSelect={() => setWs(s => ({ ...s, ssrRecoId: r.id }))} />
+        <RecoCard key={r.id} r={r} selected={r.id === selId} onSelect={() => setWs(s => ({ ...s, ssrRecoId: r.id }))} onViewPlan={setPlanReco} />
       ))}
       <Paper withBorder p="md" radius="md">
         <Text fw={700} size="xs" mb="xs">Recommendation ranking</Text>

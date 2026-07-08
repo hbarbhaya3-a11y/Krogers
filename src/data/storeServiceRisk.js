@@ -201,6 +201,23 @@ export const SSR_RECOMMENDATIONS = [
     why: 'MEIO is specifically intended to determine where inventory should be held and how much, so service targets can be achieved at the lowest viable inventory and carrying-cost posture.',
     bestWhen: 'Use when inventory exists in the network but is not positioned close enough to the at-risk stores.',
     risk: 'Do not approve if transfer cycle time exceeds time-to-need or store capacity is insufficient.',
+    plan: {
+      title: 'Service Protection Plan — MEIO Rebalance & Allocation Resequencing',
+      objective: 'Protect at-risk store service by repositioning existing network inventory and resequencing allocation before any expedite.',
+      phases: [
+        { name: 'Phase 1 — Detect & rank (0–4 hr)', actions: ['Rank ~78 priority stores by stockout probability × time-to-need', 'Freeze allocation for priority SKU/store pairs pending replan'] },
+        { name: 'Phase 2 — Rebalance (4–24 hr)', actions: ['Identify surplus on-hand at upstream / alternate nodes for the 6 SKU families', 'Generate transfer orders where transfer cycle time < time-to-need and feasibility ≥ 80%', 'Resequence constrained inventory so priority pairs are served first'] },
+        { name: 'Phase 3 — Confirm & monitor (24–54 hr)', actions: ['Confirm receipts and refresh service-risk scores', 'Release non-priority allocation back to standard flow'] },
+      ],
+      changes: [
+        { area: 'Inventory (MEIO)', change: 'Transfer / reallocate surplus from upstream & alternate DCs to at-risk stores; raise reorder point for priority pairs' },
+        { area: 'Allocation (OMS)', change: 'Resequence constrained inventory so priority store/SKU combinations are served first' },
+        { area: 'Safety stock', change: '+5% for high-risk stores; −2% at overstocked nodes' },
+        { area: 'Transportation', change: 'No lane change; standard carriers retained' },
+      ],
+      guardrails: ['Store capacity hard constraint', 'Transfer feasibility ≥ 80%', 'No premium freight in this plan', 'Planner approval before execution'],
+      expected: 'Service attainment 92.4% → 96.9%; stockout 18.6% → 9.8%; premium freight −$135K; TTR −14 hr.',
+    },
   },
   {
     id: 'reroute', rank: 3, tone: 'teal', recommended: false,
@@ -225,6 +242,23 @@ export const SSR_RECOMMENDATIONS = [
     why: 'The Network Flow & Resilience use case explicitly includes reroute simulation, lane optimization, scenario comparison, and recommended reroutes routed through approval workflows.',
     bestWhen: 'Use when replenishment can still arrive within the service window via a feasible alternate lane/carrier.',
     risk: 'Do not approve if alternate lane capacity is constrained or the reroute creates a downstream DC bottleneck.',
+    plan: {
+      title: 'Service Protection Plan — Priority Reroute',
+      objective: 'Protect service by moving at-risk replenishment loads onto feasible alternate lanes / carriers within the service window.',
+      phases: [
+        { name: 'Phase 1 — Identify at-risk loads (0–3 hr)', actions: ['Flag 27 at-risk loads across 9 lanes breaching ETA', 'Screen pre-approved alternate lanes for feasibility'] },
+        { name: 'Phase 2 — Reroute & swap (3–18 hr)', actions: ['Reroute priority loads to feasible alternate lanes', 'Swap carriers using on-time probability and tender acceptance', 'Keep non-urgent loads on the current route plan'] },
+        { name: 'Phase 3 — Track (18–49 hr)', actions: ['Track revised ETAs vs service window', 'Escalate residual breaches to selective-expedite review'] },
+      ],
+      changes: [
+        { area: 'Transportation (TMS)', change: 'Reroute at-risk loads to existing + pre-approved alternate lanes; carrier swap for at-risk loads' },
+        { area: 'Consolidation', change: 'Disable consolidation for urgent orders; retain for non-urgent' },
+        { area: 'Service windows', change: 'Strict enforcement for priority stores' },
+        { area: 'Inventory', change: 'No repositioning; on-hand posture unchanged' },
+      ],
+      guardrails: ['No new corridors', 'Carrier eligibility', 'Alternate lane capacity check', 'Planner approval before execution'],
+      expected: 'Service 92.4% → 96.2%; stockout −6.9 pts; route feasibility 74% → 87%; TTR −19 hr.',
+    },
   },
   {
     id: 'combined', rank: 1, tone: 'green', recommended: true,
@@ -250,6 +284,25 @@ export const SSR_RECOMMENDATIONS = [
     why: 'The combined path uses both mandatory demo themes — Network Flow & Resilience for reroute/replanning and MEIO for inventory rebalance across echelons — and recommends the best recovery plan to Planning.',
     bestWhen: 'Use when no single lever fully protects service without creating cost or feasibility trade-offs.',
     risk: 'Requires cross-functional approval because it changes inventory allocation, transport priority, and selective expedite decisions.',
+    plan: {
+      title: 'Service Protection Plan — Combined Recovery',
+      objective: 'Protect service across all 126 at-risk stores using the lowest-cost recovery first, expediting only unrecoverable cases.',
+      phases: [
+        { name: 'Phase 1 — Rebalance first (0–24 hr)', actions: ['Run MEIO rebalance to reposition available inventory', 'Resequence allocation to priority store/SKU pairs'] },
+        { name: 'Phase 2 — Reroute second (12–36 hr)', actions: ['Reroute remaining at-risk loads via feasible alternate lanes + carrier swap', 'Hold non-urgent loads on the current plan'] },
+        { name: 'Phase 3 — Selective expedite (24–42 hr)', actions: ['Expedite only unrecoverable critical orders within the premium-freight cap (top 10–15%)'] },
+        { name: 'Phase 4 — Confirm & learn', actions: ['Confirm service recovery and refresh risk scores', 'Log predicted vs actual KPI delta for learning'] },
+      ],
+      changes: [
+        { area: 'Inventory (MEIO)', change: 'Cross-echelon rebalance + reorder-point uplift for priority pairs' },
+        { area: 'Allocation (OMS)', change: 'Priority resequencing to at-risk store/SKU combinations' },
+        { area: 'Transportation (TMS)', change: 'Priority reroute + carrier swap on constrained lanes' },
+        { area: 'Premium freight', change: 'Selective expedite capped to top 10–15% unrecoverable orders only' },
+        { area: 'Safety stock', change: '+5% high-risk stores; −2% overstocked nodes' },
+      ],
+      guardrails: ['Store capacity', 'Service windows', 'Route / transfer feasibility', 'Carrier eligibility', 'Premium-freight guardrail', 'Planner approval'],
+      expected: 'Service 92.4% → 98.1%; stockout 18.6% → 6.4%; premium freight −$180K; TTR −26 hr.',
+    },
   },
 ]
 export const SSR_RANKING = [
