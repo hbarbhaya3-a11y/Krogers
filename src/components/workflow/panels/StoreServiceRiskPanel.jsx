@@ -77,7 +77,7 @@ function Screen1({ onContinue }) {
       </Alert>
       <SimpleGrid cols={2} spacing="md">
         <Paper withBorder p="md" radius="md" style={{ borderLeft: '3px solid var(--mantine-color-orange-5)' }}>
-          <SectionHead icon={IconRadar} title="Signal card" />
+          <SectionHead icon={IconRadar} title="Signal summary" />
           <Table fz="xs" mt="xs">
             <Table.Tbody>
               {s.card.map(r => (
@@ -104,29 +104,9 @@ function Screen1({ onContinue }) {
         </Paper>
       </SimpleGrid>
 
-      <Paper withBorder p="md" radius="md">
-        <SectionHead icon={IconChartBar} title="Historical precedents" color="violet" />
-        <Table fz="xs" mt="xs" withTableBorder withColumnBorders striped>
-          <Table.Thead><Table.Tr><Table.Th>Episode</Table.Th><Table.Th>Similarity</Table.Th><Table.Th>Prior action</Table.Th><Table.Th>Prior outcome</Table.Th></Table.Tr></Table.Thead>
-          <Table.Tbody>
-            {D.SSR_PRECEDENTS.map((p, i) => (
-              <Table.Tr key={i}>
-                <Table.Td fw={600}>{p.episode}</Table.Td>
-                <Table.Td><Text span fw={700} c="violet">{p.similarity}%</Text></Table.Td>
-                <Table.Td>{p.action}</Table.Td>
-                <Table.Td c="green">{p.outcome}</Table.Td>
-              </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
-      </Paper>
-
       <Paper withBorder radius="md" p="md" style={{ borderLeft: '3px solid var(--mantine-color-indigo-5)', background: 'var(--mantine-color-indigo-light)' }}>
         <Group gap="xs" mb={4}><ThemeIcon size={22} radius="md" variant="gradient" gradient={{ from: 'indigo', to: 'cyan', deg: 135 }}><IconTargetArrow size={13} color="white" /></ThemeIcon><Text fw={700} size="sm">Recommended Hypothesis</Text></Group>
         <Text size="sm" style={{ lineHeight: 1.7 }}>{D.SSR_HYPOTHESIS}</Text>
-        <Divider my="sm" />
-        <Text size="xs"><Text span fw={700}>Recommended next step: </Text>{D.SSR_INIT_RECO.nextStep}</Text>
-        <Text size="xs" c="dimmed" mt={2}><Text span fw={600} c="dark">Simulation path: </Text>{D.SSR_INIT_RECO.path}</Text>
       </Paper>
       <ContinueButton onClick={onContinue} label="Continue to Objectives" />
     </Stack>
@@ -203,17 +183,12 @@ function Screen3({ ws, setWs, onContinue }) {
                   ) : (
                     <Select size="xs" data={l.options} value={val} onChange={v => setLever(l.id, v)} allowDeselect={false} />
                   )}
-                  <Text size="10px" c="dimmed" mt={2}>{l.why}</Text>
                 </Box>
               )
             })}
           </Stack>
         </Paper>
       ))}
-      <Paper withBorder p="md" radius="md" style={{ background: 'var(--mantine-color-default-hover)' }}>
-        <Text size="xs" fw={700} mb={4}>Recommended lever configuration</Text>
-        <List size="xs" type="ordered" spacing={2}>{D.SSR_LEVER_SUMMARY.map((x, i) => <List.Item key={i}>{x}</List.Item>)}</List>
-      </Paper>
       <ContinueButton onClick={onContinue} label="Review Scenario Setup" icon={<IconChartBar size={16} />} />
     </Stack>
   )
@@ -252,13 +227,6 @@ function Screen4({ onContinue }) {
           </Stack>
         </Paper>
       </SimpleGrid>
-      <Paper withBorder p="md" radius="md">
-        <Text fw={700} size="xs" mb="xs">Scenario variants to run</Text>
-        <Table fz="xs" withTableBorder withColumnBorders>
-          <Table.Thead><Table.Tr><Table.Th>Scenario</Table.Th><Table.Th>Description</Table.Th></Table.Tr></Table.Thead>
-          <Table.Tbody>{D.SSR_VARIANTS.map(v => <Table.Tr key={v.scenario}><Table.Td fw={600}>{v.scenario}</Table.Td><Table.Td c="dimmed">{v.desc}</Table.Td></Table.Tr>)}</Table.Tbody>
-        </Table>
-      </Paper>
       <ContinueButton onClick={onContinue} label="Run Simulation" icon={<IconTrophy size={16} />} />
     </Stack>
   )
@@ -281,9 +249,16 @@ function RecoCard({ r, selected, onSelect }) {
             <Table.Td c={k.d.startsWith('-') && !k.k.toLowerCase().includes('stockout') && !k.k.toLowerCase().includes('freight') && !k.k.toLowerCase().includes('ttr') ? 'red' : 'green'} fw={600}>{k.d}</Table.Td></Table.Tr>
         ))}</Table.Tbody>
       </Table>
+      <SimpleGrid cols={2} spacing={4} mt="xs">
+        <Text size="10px" c="dimmed"><b>Trigger:</b> {r.trigger}</Text>
+        <Text size="10px" c="dimmed"><b>Confidence:</b> {r.confidence}</Text>
+        <Text size="10px" c="dimmed"><b>Levers used:</b> {r.leversUsed}</Text>
+        <Text size="10px" c="dimmed"><b>Impacted scope:</b> {r.impacted}</Text>
+      </SimpleGrid>
       <Text size="10px" c="dimmed" mt="xs">{r.why}</Text>
       <Text size="10px" mt={4}><b>Best used when:</b> {r.bestWhen}</Text>
       <Text size="10px" c="orange" mt={2}><b>Risk:</b> {r.risk}</Text>
+      <Text size="10px" c="dimmed" mt={2}><b>Why not alternatives:</b> {r.whyNot}</Text>
       {selected && <Badge mt="sm" size="xs" color={r.tone} variant="light" leftSection={<IconCheck size={10} />}>Selected</Badge>}
     </Paper>
   )
@@ -363,8 +338,9 @@ function Screen6({ onApprove }) {
 }
 
 // ══════════════════ Screen 7 — Learn & Save ═════════════════════════════════
-function Screen7({ ws, setWs }) {
+function Screen7({ ws, setWs, onExit }) {
   const { exit } = useUseCase()
+  const goHome = onExit || exit
   const saved = ws.ssrSaved
   const sv = D.SSR_SAVE
   return (
@@ -397,15 +373,15 @@ function Screen7({ ws, setWs }) {
         <Button size="xs" variant="light" color="grape" leftSection={<IconDeviceFloppy size={14} />} disabled={saved}
           onClick={() => setWs(s => ({ ...s, ssrSaved: true }))}>{saved ? 'Saved to library' : 'Save to Scenario Library'}</Button>
         <Button size="xs" variant="subtle" color="gray" leftSection={<IconFileExport size={14} />}>Export Decision Log</Button>
-        <Button size="xs" variant="light" color="orange" leftSection={<IconRoute size={14} />} onClick={exit}>Open Next At-Risk Signal</Button>
-        <Button size="md" color="green" leftSection={<IconCheck size={16} />} onClick={exit}>Exit Guided Flow</Button>
+        <Button size="xs" variant="light" color="orange" leftSection={<IconRoute size={14} />} onClick={goHome}>Open Next At-Risk Signal</Button>
+        <Button size="md" color="green" leftSection={<IconCheck size={16} />} onClick={goHome}>Exit Guided Flow</Button>
       </Group>
     </Stack>
   )
 }
 
 // ══════════════════ Dispatcher ══════════════════════════════════════════════
-export default function StoreServiceRiskPanel({ step, workflowState, setWorkflowState, onContinue, onApprove }) {
+export default function StoreServiceRiskPanel({ step, workflowState, setWorkflowState, onContinue, onApprove, onExit }) {
   const screen = step.panelData?.screen ?? 1
   const lines = D.SSR_LOADING_LINES[screen] || ['Loading…']
   const { phase, idx } = useLoadingPhase(lines)
@@ -419,6 +395,6 @@ export default function StoreServiceRiskPanel({ step, workflowState, setWorkflow
     case 4: return <Screen4 onContinue={onContinue} />
     case 5: return <Screen5 ws={ws} setWs={setWs} onContinue={onContinue} />
     case 6: return <Screen6 onApprove={onApprove} />
-    default: return <Screen7 ws={ws} setWs={setWs} />
+    default: return <Screen7 ws={ws} setWs={setWs} onExit={onExit} />
   }
 }
