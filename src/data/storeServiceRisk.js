@@ -1,125 +1,307 @@
 // Store Service Risk — At-Risk Replenishment Orders
-// 7-screen guided flow config. Derived from Signal 4 full-fidelity blueprint:
-// Signal Analysis → Objectives & KPIs → Simulation Levers → Simulation Summary
-// → Optimization Results → Approval & Execution → Learn & Save Scenario.
-// Domain levers: MEIO rebalance, allocation resequencing, transportation
-// reroute, selective expedited logistics. All levers default to `recommended`.
+// Full-fidelity 7-screen guided flow content (Signal 1).
+// Screens: Signal Analysis → Objectives & KPIs → Simulation Levers →
+// Simulation Summary → Optimization Results → Approval & Execution →
+// Learn & Save Scenario. All levers/objectives/KPIs default to `recommended`.
+// Numeric KPIs are demo-ready illustrative values.
 
-// ── Simulation levers (Screen 3) ────────────────────────────────────────────
-// `recommended` is used as the default value of the page for every lever.
-export const SSR_LEVERS = [
+// ── Screen 1 — Signal Analysis ──────────────────────────────────────────────
+export const SSR_SIGNAL = {
+  sentinel: 'Store Service Sentinel',
+  bannerText: 'Store Service Risk — at-risk replenishment orders detected across priority store/SKU combinations.',
+  card: [
+    { label: 'Signal class', value: 'Service risk / replenishment exception' },
+    { label: 'Severity', value: 'HIGH' },
+    { label: 'Confidence', value: '87%', note: 'demo value' },
+    { label: 'Impacted scope', value: '126 stores / SKU-location combinations', note: 'demo value' },
+    { label: 'Historical precedents', value: '5 matched episodes', note: 'demo value' },
+    { label: 'Response window', value: '24–72 hr service protection window' },
+  ],
+  sourceChips: ['OMS', 'POS', 'INVENTORY LEDGER', 'WMS', 'TMS', 'DC INVENTORY CONTEXT'],
+  detail: 'TwinX has detected rising service risk across priority store/SKU replenishment orders. Delayed inbound flow, low inventory cover, and compressed time-to-need indicate that the current replenishment plan may miss service targets if no intervention is taken.',
+  conditions: [
+    'Store inventory cover is below service threshold,',
+    'Replenishment ETA is outside the required service window,',
+    'Alternative inventory exists in the network but is not currently positioned to protect the at-risk stores.',
+  ],
+  conditionsNote: 'Store nodes in the MEIO model use demand, on-hand inventory, service risk, and space constraints as state variables, and stockout / replenishment need as events.',
+}
+
+export const SSR_PRECEDENTS = [
+  { episode: 'Promo-driven replenishment spike', similarity: 91, action: 'Priority allocation + reroute', outcome: 'Service risk reduced; premium freight limited' },
+  { episode: 'Supplier delay to high-volume DC', similarity: 86, action: 'MEIO rebalance + selective expedite', outcome: 'Downstream stockout risk reduced' },
+  { episode: 'DC throughput constraint', similarity: 79, action: 'Capacity shift + order resequencing', outcome: 'Backlog reduced and urgent stores protected' },
+]
+
+export const SSR_HYPOTHESIS = 'If Kroger prioritizes at-risk store/SKU replenishment orders using a combined recovery plan — MEIO rebalance, priority reroute, allocation resequencing, and selective premium freight only for unrecoverable cases — then Kroger can improve service attainment while limiting premium freight and avoiding unnecessary inventory movement.'
+export const SSR_INIT_RECO = {
+  nextStep: 'Run Service Protection Replanning simulation.',
+  path: 'At-risk replenishment orders → service-risk ranking → MEIO rebalance → reroute / resequence → selective expedite → planner approval',
+}
+
+// ── Screen 2 — Objectives & KPIs ────────────────────────────────────────────
+export const SSR_PRIMARY_OBJECTIVES = [
+  { value: 'Protect store service / in-stock', desc: 'Prioritize store availability and prevent service misses' },
+  { value: 'Minimize premium freight', desc: 'Reduce expedite and premium freight exposure' },
+  { value: 'Minimize total cost-to-serve', desc: 'Optimize logistics and replenishment cost' },
+  { value: 'Maximize inventory efficiency', desc: 'Reduce excess safety stock / days inventory' },
+  { value: 'Minimize waste / markdown', desc: 'Protect fresh and aging-sensitive inventory' },
+  { value: 'Improve recovery time / TTR', desc: 'Reduce disruption recovery cycle time' },
+]
+export const SSR_PRIMARY_DEFAULT = 'Protect store service / in-stock'
+
+export const SSR_SECONDARY_OBJECTIVES = [
+  { value: 'Reduce premium freight exposure', desc: 'Avoid broad expedite response' },
+  { value: 'Reduce stockout probability', desc: 'Minimize risk of store/SKU stockout' },
+  { value: 'Minimize recovery time', desc: 'Protect service quickly' },
+  { value: 'Preserve DC throughput', desc: 'Avoid creating new DC bottlenecks' },
+  { value: 'Reduce waste / shrink', desc: 'Important for fresh categories' },
+  { value: 'Reduce total network inventory', desc: 'MEIO capital objective' },
+]
+export const SSR_SECONDARY_DEFAULT = ['Reduce premium freight exposure', 'Reduce stockout probability']
+
+export const SSR_KPI_OPTIONS = [
+  { value: 'Service attainment under disruption', type: 'Primary service', rec: true },
+  { value: 'Store in-stock rate', type: 'Primary store', rec: true },
+  { value: 'Stockout probability', type: 'Risk', rec: true },
+  { value: 'Premium freight spend', type: 'Cost', rec: true },
+  { value: 'Recovery time / TTR', type: 'Resilience', rec: true },
+  { value: 'Route feasibility', type: 'Feasibility', rec: true },
+  { value: 'Transfer feasibility', type: 'Feasibility', rec: true },
+  { value: 'Days inventory / safety stock', type: 'Inventory', rec: false },
+  { value: 'Total network inventory', type: 'Capital', rec: false },
+  { value: 'Shrink / waste %', type: 'Fresh', rec: false },
+  { value: 'Replenishment exception closure time', type: 'Ops', rec: false },
+]
+export const SSR_KPI_DEFAULT = SSR_KPI_OPTIONS.filter(k => k.rec).map(k => k.value)
+
+// ── Screen 3 — Simulation Levers (recommended = default) ────────────────────
+// control: 'select' (options[]) | 'switch' (boolean). recommended seeds default.
+export const SSR_LEVER_GROUPS = [
   {
-    id: 'meioRebalance',
-    label: 'MEIO Rebalance Aggressiveness',
-    help: 'How hard to rebalance inventory across echelons to cover downstream risk.',
-    type: 'segmented',
-    options: ['Conservative', 'Balanced', 'Aggressive'],
-    recommended: 'Balanced',
+    group: 'A', title: 'Service protection levers', color: 'orange',
+    levers: [
+      { id: 'priorityThreshold', label: 'Store priority threshold', control: 'select', options: ['Top 25% risk stores', 'Top 20% risk stores', 'Top 15% risk stores', 'Top 10% risk stores'], recommended: 'Top 15% risk stores', why: 'Focuses recovery on stores most likely to miss service' },
+      { id: 'serviceTarget', label: 'Service target', control: 'select', options: ['96%', '97%', '98% for priority SKUs'], recommended: '98% for priority SKUs', why: 'Stress-tests higher service requirement' },
+      { id: 'stockoutThreshold', label: 'Stockout risk threshold', control: 'select', options: ['>35% risk', '>30% risk', '>25% risk', '>20% risk'], recommended: '>25% risk', why: 'Pulls more stores into intervention scope' },
+      { id: 'timeToNeed', label: 'Time-to-need window', control: 'select', options: ['72 hrs', '48 hrs', '24 hrs'], recommended: '48 hrs', why: 'Tightens urgency and prioritizes near-term risks' },
+      { id: 'skuCriticality', label: 'SKU criticality', control: 'select', options: ['All impacted SKUs', 'High-volume + high-service SKUs'], recommended: 'High-volume + high-service SKUs', why: 'Avoids over-intervention on low-criticality SKUs' },
+    ],
   },
   {
-    id: 'allocationPriority',
-    label: 'Allocation Resequencing Priority',
-    help: 'Reorder replenishment queues toward service or toward cost.',
-    type: 'segmented',
-    options: ['Cost-first', 'Balanced', 'Service-first'],
-    recommended: 'Service-first',
+    group: 'B', title: 'MEIO / inventory levers', color: 'violet',
+    levers: [
+      { id: 'transfer', label: 'Transfer-on / transfer-off', control: 'switch', recommended: true, onLabel: 'Transfer-on', why: 'Tests whether available inventory elsewhere can protect stores' },
+      { id: 'bufferPlacement', label: 'Upstream vs downstream buffer placement', control: 'select', options: ['Balanced', 'Shift 10–15% downstream (priority SKUs)', 'Shift upstream'], recommended: 'Shift 10–15% downstream (priority SKUs)', why: 'Tests whether moving inventory closer to stores protects service' },
+      { id: 'safetyStock', label: 'Safety stock adjustment', control: 'select', options: ['Current policy', '+5% high-risk / -2% overstock', '+10% all nodes'], recommended: '+5% high-risk / -2% overstock', why: 'Protects service without inflating network-wide inventory' },
+      { id: 'reorderPoint', label: 'Reorder point adjustment', control: 'select', options: ['Current reorder point', 'Raise for priority SKU/store pairs'], recommended: 'Raise for priority SKU/store pairs', why: 'Triggers earlier replenishment for at-risk combinations' },
+      { id: 'transferViability', label: 'Transfer viability threshold', control: 'select', options: ['70% feasibility', '80% feasibility', '90% feasibility'], recommended: '80% feasibility', why: 'Avoids recommending transfers that cannot arrive in time' },
+      { id: 'storeCapacity', label: 'Store capacity constraint', control: 'select', options: ['Editable', 'Locked (hard constraint)'], recommended: 'Locked (hard constraint)', why: 'Prevents infeasible downstream push' },
+    ],
   },
   {
-    id: 'rerouteScope',
-    label: 'Transportation Reroute Scope',
-    help: 'Share of at-risk lanes eligible for reroute / carrier swap.',
-    type: 'slider', min: 0, max: 100, step: 5, unit: '%',
-    recommended: 60,
+    group: 'C', title: 'Transportation / network levers', color: 'teal',
+    levers: [
+      { id: 'priorityReroute', label: 'Priority reroute', control: 'switch', recommended: true, onLabel: 'On', why: 'Tests rerouting of critical replenishment orders' },
+      { id: 'alternateLane', label: 'Alternate lane eligibility', control: 'select', options: ['Existing routes only', 'Existing + pre-approved alternate lanes'], recommended: 'Existing + pre-approved alternate lanes', why: 'Expands feasible recovery routes without adding new corridors' },
+      { id: 'carrierSwap', label: 'Carrier swap', control: 'switch', recommended: true, onLabel: 'On for at-risk loads', why: 'Uses carrier on-time probability and tender acceptance' },
+      { id: 'premiumCap', label: 'Premium freight cap', control: 'select', options: ['No cap', 'Cap to top 10–15% critical orders', 'Cap to top 5% critical'], recommended: 'Cap to top 10–15% critical orders', why: 'Prevents broad expedite spend' },
+      { id: 'consolidation', label: 'Consolidation rule', control: 'select', options: ['Current plan', 'Disable for urgent / enable non-urgent'], recommended: 'Disable for urgent / enable non-urgent', why: 'Protects service while preserving trailer utilization' },
+      { id: 'windowStrictness', label: 'Service window strictness', control: 'select', options: ['Normal', 'Strict for priority stores'], recommended: 'Strict for priority stores', why: 'Filters routes that cannot protect target service' },
+    ],
   },
   {
-    id: 'expediteCap',
-    label: 'Selective Expedited Logistics (Premium Freight Cap)',
-    help: 'Ceiling on at-risk loads allowed to use premium freight.',
-    type: 'slider', min: 0, max: 40, step: 5, unit: '% of loads',
-    recommended: 15,
-  },
-  {
-    id: 'safetyStockUplift',
-    label: 'Safety Stock Uplift (priority SKUs)',
-    help: 'Temporary safety-stock increase for priority store/SKU pairs.',
-    type: 'slider', min: 0, max: 30, step: 2, unit: '%',
-    recommended: 12,
-  },
-  {
-    id: 'serviceTarget',
-    label: 'Service Attainment Target',
-    help: 'Minimum service level the recovery plan must protect.',
-    type: 'slider', min: 92, max: 99, step: 0.5, unit: '%',
-    recommended: 97,
-  },
-  {
-    id: 'recoveryWindow',
-    label: 'Recovery Window',
-    help: 'Time budget for the network to return to plan.',
-    type: 'segmented',
-    options: ['24 hr', '48 hr', '72 hr'],
-    recommended: '48 hr',
+    group: 'D', title: 'Cost / resilience levers', color: 'blue',
+    levers: [
+      { id: 'freightGuardrail', label: 'Premium freight budget guardrail', control: 'select', options: ['Current budget', 'Keep below scenario cap'], recommended: 'Keep below scenario cap', why: 'Ensures service is not protected at unlimited cost' },
+      { id: 'shortageProxy', label: 'Shortage proxy cost', control: 'select', options: ['Current proxy', 'Increase for priority SKUs'], recommended: 'Increase for priority SKUs', why: 'Makes stockout avoidance more important in optimization' },
+      { id: 'transferCost', label: 'Transfer cost', control: 'select', options: ['Current cost', 'Use actual transfer cost'], recommended: 'Use actual transfer cost', why: 'Prevents uneconomic transfers' },
+      { id: 'ttrTarget', label: 'TTR target', control: 'select', options: ['72 hrs', '48 hrs', '24 hrs'], recommended: '48 hrs', why: 'Prioritizes faster recovery' },
+      { id: 'feasibilityMin', label: 'Feasibility score minimum', control: 'select', options: ['70%', '80%', '90%'], recommended: '80%', why: 'Filters weak recommendations' },
+    ],
   },
 ]
 
-// Convenience: { leverId: recommendedValue } — the page's default lever state.
-export const SSR_RECOMMENDED_DEFAULTS = Object.fromEntries(
-  SSR_LEVERS.map(l => [l.id, l.recommended])
-)
+export const SSR_ALL_LEVERS = SSR_LEVER_GROUPS.flatMap(g => g.levers)
+export const SSR_LEVER_DEFAULTS = Object.fromEntries(SSR_ALL_LEVERS.map(l => [l.id, l.recommended]))
 
-// ── KPIs (Screen 2) — baseline vs target ────────────────────────────────────
-export const SSR_KPIS = [
-  { id: 'serviceAttainment', label: 'Service attainment', baseline: 94.2, target: 97.0, unit: '%', dir: 'up' },
-  { id: 'stockoutProb',      label: 'Stockout probability', baseline: 8.5, target: 3.0, unit: '%', dir: 'down' },
-  { id: 'premiumFreight',    label: 'Premium freight cost', baseline: 1.42, target: 0.85, unit: '$M', dir: 'down' },
-  { id: 'recoveryTime',      label: 'Recovery time', baseline: 72, target: 36, unit: 'hr', dir: 'down' },
-  { id: 'storesAtRisk',      label: 'Stores at risk', baseline: 126, target: 18, unit: '', dir: 'down' },
+export const SSR_LEVER_SUMMARY = [
+  'Prioritize top 15% service-risk stores',
+  'Raise service target to 98% for priority SKUs',
+  'Enable MEIO transfer/rebalance',
+  'Shift 10–15% buffer downstream for priority SKUs',
+  'Enable priority reroute for urgent replenishment orders',
+  'Enable carrier swap for at-risk loads',
+  'Cap premium freight to critical unrecoverable orders only',
+  'Set TTR target to 48 hours',
+  'Keep store capacity, service windows, carrier eligibility, and planner approval as hard constraints',
 ]
 
-// ── Objectives (Screen 2) ───────────────────────────────────────────────────
-export const SSR_OBJECTIVES = [
-  { id: 'protectService', label: 'Protect store service', desc: 'Hold priority stores above the service-attainment floor.', recommended: true },
-  { id: 'cutStockout', label: 'Cut stockout probability', desc: 'Reduce downstream out-of-stock exposure on priority SKUs.', recommended: true },
-  { id: 'limitPremium', label: 'Limit premium freight', desc: 'Cap expedited logistics spend during recovery.', recommended: true },
-  { id: 'speedRecovery', label: 'Speed recovery', desc: 'Return the network to plan inside the recovery window.', recommended: false },
+// ── Screen 4 — Simulation Summary ───────────────────────────────────────────
+export const SSR_SCENARIO = {
+  name: 'Service Protection Replanning',
+  signal: 'Store Service Risk — At-Risk Replenishment Orders',
+  objective: 'Protect store service / in-stock while reducing stockout probability and limiting premium freight.',
+  method: 'Deterministic baseline + stochastic demand / lead-time / ETA uncertainty + optimization scenario comparison.',
+}
+export const SSR_SCOPE = [
+  { item: 'Stores in scope', value: '126 at-risk stores', note: 'demo value' },
+  { item: 'SKU families', value: '8 priority SKU families', note: 'demo value' },
+  { item: 'DCs involved', value: 'In-scope servicing DCs' },
+  { item: 'Time horizon', value: '72 hours' },
+  { item: 'Iterations', value: '1,000', note: 'demo value' },
+  { item: 'Baseline', value: 'Current replenishment plan' },
+  { item: 'Comparison scenarios', value: 'Do nothing, reroute, MEIO rebalance, selective expedite, combined recovery' },
+  { item: 'Hard constraints', value: 'Store capacity, service windows, route/transfer feasibility, carrier eligibility, planner approval' },
+]
+export const SSR_VARIANTS = [
+  { scenario: 'Baseline / Do Nothing', desc: 'Current replenishment plan continues' },
+  { scenario: 'Scenario 1 — MEIO Rebalance', desc: 'Move inventory from available upstream/alternate nodes' },
+  { scenario: 'Scenario 2 — Priority Reroute', desc: 'Reroute at-risk replenishment orders through feasible alternate lanes' },
+  { scenario: 'Scenario 3 — Selective Premium Freight', desc: 'Expedite only critical unrecoverable orders' },
+  { scenario: 'Scenario 4 — Combined Recovery', desc: 'MEIO rebalance + priority reroute + selective expedite' },
+]
+export const SSR_VALIDATION = [
+  'Store capacity constraint checked', 'DC inventory availability checked', 'Transfer feasibility checked',
+  'Route feasibility checked', 'Carrier eligibility checked', 'Service windows checked',
+  'Premium freight guardrail checked', 'Planner approval required before execution',
 ]
 
-// ── Optimization plans (Screen 5) ───────────────────────────────────────────
-// The Balanced plan is the recommended default selection.
-export const SSR_PLANS = [
+// ── Screen 5 — Simulation Results ───────────────────────────────────────────
+export const SSR_BASELINE = [
+  { kpi: 'Service attainment under disruption', value: '92.4%' },
+  { kpi: 'Store in-stock rate for impacted SKUs', value: '91.8%' },
+  { kpi: 'Stockout probability', value: '18.6%' },
+  { kpi: 'Premium freight exposure', value: '$420K' },
+  { kpi: 'Recovery time / TTR', value: '68 hrs' },
+  { kpi: 'Route feasibility', value: '74%' },
+  { kpi: 'Transfer feasibility', value: '71%' },
+]
+export const SSR_RECOMMENDATIONS = [
   {
-    id: 'service-max', name: 'Service-Max', tone: 'orange',
-    summary: 'Maximum service protection; higher premium-freight spend.',
-    service: 98.1, stockout: 2.2, premium: 1.15, recovery: 30, recommended: false,
+    id: 'meio', rank: 2, tone: 'violet', recommended: false,
+    cardTitle: 'Recommendation 1: Rebalance Available Inventory Before Expediting',
+    recommends: [
+      'Move available inventory from upstream/alternate nodes to stores with highest stockout probability.',
+      'Resequence allocation so constrained inventory goes first to priority store/SKU combinations.',
+    ],
+    kpi: [
+      { k: 'Service attainment', b: '92.4%', a: '96.9%', d: '+4.5 pts' },
+      { k: 'Store in-stock rate', b: '91.8%', a: '96.1%', d: '+4.3 pts' },
+      { k: 'Stockout probability', b: '18.6%', a: '9.8%', d: '-8.8 pts' },
+      { k: 'Premium freight exposure', b: '$420K', a: '$285K', d: '-$135K' },
+      { k: 'TTR', b: '68 hrs', a: '54 hrs', d: '-14 hrs' },
+      { k: 'Transfer feasibility', b: '71%', a: '84%', d: '+13 pts' },
+    ],
+    why: 'MEIO is specifically intended to determine where inventory should be held and how much, so service targets can be achieved at the lowest viable inventory and carrying-cost posture.',
+    bestWhen: 'Use when inventory exists in the network but is not positioned close enough to the at-risk stores.',
+    risk: 'Do not approve if transfer cycle time exceeds time-to-need or store capacity is insufficient.',
   },
   {
-    id: 'balanced', name: 'Balanced', tone: 'green',
-    summary: 'Best service-per-dollar; MEIO rebalance + selective expedite.',
-    service: 97.2, stockout: 3.0, premium: 0.86, recovery: 36, recommended: true,
+    id: 'reroute', rank: 3, tone: 'teal', recommended: false,
+    cardTitle: 'Recommendation 2: Reroute Critical Replenishment Orders',
+    recommends: [
+      'Reroute replenishment loads for priority stores through feasible alternate lanes and eligible carriers.',
+      'Keep non-urgent replenishment on the current route plan.',
+    ],
+    kpi: [
+      { k: 'Service attainment', b: '92.4%', a: '96.2%', d: '+3.8 pts' },
+      { k: 'Store in-stock rate', b: '91.8%', a: '95.4%', d: '+3.6 pts' },
+      { k: 'Stockout probability', b: '18.6%', a: '11.7%', d: '-6.9 pts' },
+      { k: 'Premium freight exposure', b: '$420K', a: '$330K', d: '-$90K' },
+      { k: 'TTR', b: '68 hrs', a: '49 hrs', d: '-19 hrs' },
+      { k: 'Route feasibility', b: '74%', a: '87%', d: '+13 pts' },
+    ],
+    why: 'The Network Flow & Resilience use case explicitly includes reroute simulation, lane optimization, scenario comparison, and recommended reroutes routed through approval workflows.',
+    bestWhen: 'Use when replenishment can still arrive within the service window via a feasible alternate lane/carrier.',
+    risk: 'Do not approve if alternate lane capacity is constrained or the reroute creates a downstream DC bottleneck.',
   },
   {
-    id: 'cost-min', name: 'Cost-Min', tone: 'blue',
-    summary: 'Lowest cost; slower recovery, thinner service margin.',
-    service: 95.6, stockout: 4.8, premium: 0.52, recovery: 60, recommended: false,
+    id: 'combined', rank: 1, tone: 'green', recommended: true,
+    cardTitle: 'Recommendation 3: Combined Service Protection Recovery',
+    recommends: [
+      'Use MEIO rebalance first, priority reroute second, and premium freight only for critical unrecoverable store/SKU cases.',
+    ],
+    kpi: [
+      { k: 'Service attainment', b: '92.4%', a: '98.1%', d: '+5.7 pts' },
+      { k: 'Store in-stock rate', b: '91.8%', a: '97.6%', d: '+5.8 pts' },
+      { k: 'Stockout probability', b: '18.6%', a: '6.4%', d: '-12.2 pts' },
+      { k: 'Premium freight exposure', b: '$420K', a: '$240K', d: '-$180K' },
+      { k: 'TTR', b: '68 hrs', a: '42 hrs', d: '-26 hrs' },
+      { k: 'Route feasibility', b: '74%', a: '86%', d: '+12 pts' },
+      { k: 'Transfer feasibility', b: '71%', a: '83%', d: '+12 pts' },
+    ],
+    why: 'The combined path uses both mandatory demo themes — Network Flow & Resilience for reroute/replanning and MEIO for inventory rebalance across echelons — and recommends the best recovery plan to Planning.',
+    bestWhen: 'Use when no single lever fully protects service without creating cost or feasibility trade-offs.',
+    risk: 'Requires cross-functional approval because it changes inventory allocation, transport priority, and selective expedite decisions.',
   },
 ]
-
-// ── Execution checklist (Screen 6) ──────────────────────────────────────────
-export const SSR_EXECUTION_ITEMS = [
-  { id: 'reroute', label: 'Reroute / carrier-swap orders issued to TMS', count: 41 },
-  { id: 'transfer', label: 'Inter-echelon transfer orders staged (MEIO)', count: 63 },
-  { id: 'expedite', label: 'Expedite authorizations within premium-freight cap', count: 19 },
-  { id: 'allocation', label: 'Allocation resequencing pushed to OMS', count: 126 },
-  { id: 'holdout', label: 'Holdout lanes preserved for causal measurement', count: 12 },
+export const SSR_RANKING = [
+  { rank: 1, reco: 'Combined Recovery', service: 'Highest', cost: 'High', speed: 'Highest', feasibility: 'Medium-high', select: 'Selected' },
+  { rank: 2, reco: 'MEIO Rebalance + Allocation Resequencing', service: 'High', cost: 'High', speed: 'Medium', feasibility: 'High', select: 'Alternative' },
+  { rank: 3, reco: 'Priority Reroute', service: 'Medium-high', cost: 'Medium-high', speed: 'High', feasibility: 'High', select: 'Alternative' },
 ]
 
-// ── Per-screen loading transition lines (new supply-chain context) ──────────
+// ── Screen 6 — Approval & Execution ─────────────────────────────────────────
+export const SSR_APPROVAL = {
+  selected: 'Combined Service Protection Recovery',
+  action: 'MEIO rebalance + priority reroute + selective premium freight for unrecoverable cases only',
+  summary: [
+    { field: 'Decision owner', value: 'Planning lead / supply chain planner' },
+    { field: 'Approval type', value: 'Human approval required' },
+    { field: 'Execution mode', value: 'Recommendation-led workflow' },
+    { field: 'Execution target', value: 'Planning / replenishment / TMS / WMS workflow handoff' },
+    { field: 'Auto-execution', value: 'Disabled for Wave 1' },
+    { field: 'Audit status', value: 'Decision log will be created' },
+  ],
+  execItems: [
+    { item: 'Inventory rebalance list', target: 'Inventory / replenishment planning', action: 'Transfer or reallocate available inventory to priority stores' },
+    { item: 'Priority replenishment list', target: 'OMS / planning queue', action: 'Resequence constrained replenishment orders' },
+    { item: 'Reroute candidate list', target: 'TMS / transportation planning', action: 'Move at-risk orders to feasible alternate lanes/carriers' },
+    { item: 'Selective expedite list', target: 'Logistics exception queue', action: 'Expedite only unrecoverable high-risk orders' },
+    { item: 'Constraint checks', target: 'Approval pack', action: 'Show service window, transfer/route feasibility, store capacity' },
+    { item: 'Expected KPI delta', target: 'Decision log', action: 'Store predicted KPI improvement before execution' },
+  ],
+  rationale: 'This option delivers the highest service protection while avoiding broad premium freight. It uses network inventory first, reroutes critical replenishment second, and applies expedite only where service cannot otherwise be protected.',
+  constraints: ['Store capacity', 'Service window', 'DC inventory availability', 'Transfer feasibility', 'Route feasibility', 'Carrier eligibility', 'Premium freight guardrail', 'Planner approval'],
+}
+
+// ── Screen 7 — Learn & Save ─────────────────────────────────────────────────
+export const SSR_OUTCOMES = [
+  { metric: 'Service attainment', pred: '98.1%', actual: '97.4%', learn: 'Prediction slightly optimistic' },
+  { metric: 'Store in-stock rate', pred: '97.6%', actual: '97.1%', learn: 'Within acceptable variance' },
+  { metric: 'Stockout probability', pred: '6.4%', actual: '7.2%', learn: 'Recalibrate stockout risk' },
+  { metric: 'Premium freight exposure', pred: '$240K', actual: '$258K', learn: 'Expedite need slightly higher' },
+  { metric: 'TTR', pred: '42 hrs', actual: '45 hrs', learn: 'Update recovery-time prior' },
+  { metric: 'Transfer feasibility', pred: '83%', actual: '80%', learn: 'Update transfer cycle-time assumption' },
+  { metric: 'Route feasibility', pred: '86%', actual: '88%', learn: 'Reroute model performed better than expected' },
+]
+export const SSR_INSIGHTS = [
+  'Transfer cycle time was slightly longer than expected for selected store clusters.',
+  'Reroute feasibility performed better than simulated for two priority lanes.',
+  'Premium freight was still required for a small subset of unrecoverable orders.',
+  'Stockout-risk model should increase weight on time-to-need compression.',
+  'Store service-risk threshold should remain at 25% for future similar events.',
+]
+export const SSR_SAVE = {
+  name: 'Store Service Protection — Combined Recovery',
+  tags: ['SERVICE RISK', 'REPLENISHMENT', 'MEIO REBALANCE', 'PRIORITY REROUTE', 'SELECTIVE EXPEDITE', 'SUPPLIER / DC / STORE FLOW'],
+  reusableFor: [
+    'supplier delay affecting store replenishment',
+    'DC backlog creating downstream service risk',
+    'promo-driven demand spike',
+    'lead-time degradation',
+    'low inventory cover at priority stores',
+  ],
+}
+
+// ── Per-screen loading transition lines ─────────────────────────────────────
 export const SSR_LOADING_LINES = {
-  1: ['Ingesting OMS + inventory feeds…', 'Scoring store/SKU service risk…', 'Matching disruption precedents…', 'Signal analysis ready.'],
-  2: ['Loading service KPIs…', 'Reading baseline vs target…', 'Preparing objectives…'],
-  3: ['Loading simulation levers…', 'Applying recommended defaults…', 'Levers ready.'],
-  4: ['Running recovery simulation…', 'Sampling demand + ETA uncertainty…', 'Comparing vs do-nothing baseline…', 'Summary ready.'],
-  5: ['Optimizing recovery plans…', 'Ranking service-vs-cost trade-offs…', 'Selecting recommended plan…'],
-  6: ['Assembling execution package…', 'Validating constraints + holdout…', 'Ready for approval.'],
-  7: ['Capturing outcomes…', 'Writing to scenario library…', 'Learning recorded.'],
+  1: ['Ingesting OMS · POS · inventory ledger…', 'Scoring store/SKU service risk…', 'Matching disruption precedents…', 'Signal analysis ready.'],
+  2: ['Loading objective framework…', 'Aligning KPIs to Store & DC Replenishment…', 'Objectives ready.'],
+  3: ['Loading simulation levers…', 'Applying recommended configuration…', 'Levers ready.'],
+  4: ['Assembling scenario setup…', 'Running pre-run validation checks…', 'Summary ready.'],
+  5: ['Running deterministic + stochastic simulation…', 'Comparing recovery scenarios vs baseline…', 'Ranking recommendations…'],
+  6: ['Assembling execution package…', 'Validating constraints + guardrails…', 'Ready for planner approval.'],
+  7: ['Capturing realized outcomes…', 'Comparing predicted vs actual…', 'Updating priors + scenario library…'],
 }
