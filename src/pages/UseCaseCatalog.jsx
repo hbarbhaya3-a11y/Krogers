@@ -30,131 +30,148 @@ const STEP_ICONS = {
 }
 
 // ── Live signals ───────────────────────────────────────────────────────────────
+// Kroger Supply Chain Resilience — Network Flow & Resilience + MEIO signals.
+// Demo values only; replace with live Kroger feed values when available.
 const LIVE_SIGNALS = [
   {
-    ucId: 'uc-advisory-readiness',
+    ucId: 'uc-supplier-delay-surge',
     severity: 'HIGH',
     severityColor: 'orange',
     stage: 'SENSE',
-    title: 'Advisory Readiness Surge — 42,000 Planning-Intent Investors Unadvised',
-    description: 'Behavior Radar detects a 3.4× surge in planning-tool usage, advice-page repeat visits, and portfolio review events — with no advisory relationship initiated. 18% of in-scope investors have visited the advice page 3+ times in the past 14 days.',
-    sourceChip: 'VANGUARD BEHAVIOR RADAR · PLANNING-TOOL EVENTS',
-    agent: 'Market Sentinel',
-    date: '5/12/2026',
-    investorCount: 42000,
-    investorLabel: '42,000',
-    investorSub: '4,200 accounts',
+    title: 'Supplier Delay Surge — High-Volume DC Flow at Risk',
+    description: 'ASN revision and supplier commitment variance indicate delayed inbound volume affecting a high-volume DC and dependent store replenishment flows.',
+    detail: 'Supplier commitment data and ASN revisions indicate that inbound volume for a high-volume DC has shifted outside the planned receiving window. TwinX links the delay to dependent lanes, DC capacity, store replenishment orders, and service-risk exposure before recommending recovery actions.',
+    sourceChip: 'SUPPLIER / ASN FEED',
+    agent: 'Network Sentinel',
+    date: '7/07/2026',
+    metricValue: '42',
+    metricUnit: 'delayed POs',
+    metricStripLabel: 'Delayed POs / ASNs',
+    metricSub: 'high-volume DC',
+    tags: ['SUPPLIER COMMITMENT VARIANCE', 'ASN REVISION EVENT', 'INBOUND ETA BREACH', 'HIGH-VOLUME DC', 'NETWORK SENTINEL'],
     precedents: 3,
     precedentNote: null,
     confidence: 91,
-    window: '30-day response window',
-    trendLabel: 'PLANNING-TOOL USAGE SURGE (3.4× BASELINE)',
+    window: '24–48 hr recovery window',
+    trendLabel: 'INBOUND DELAY EXPOSURE TREND — Supplier → DC Flow',
     trendData: [
-      { x: 'W-6', v: 0 }, { x: 'W-5', v: 200 }, { x: 'W-4', v: 800 },
-      { x: 'W-3', v: 2400 }, { x: 'W-2', v: 8000 }, { x: 'W-1', v: 24000 }, { x: 'Now', v: 42000 },
+      { x: 'W-6', v: 4 }, { x: 'W-5', v: 7 }, { x: 'W-4', v: 12 },
+      { x: 'W-3', v: 19 }, { x: 'W-2', v: 27 }, { x: 'W-1', v: 35 }, { x: 'Now', v: 42 },
     ],
-    scenario: 'Advisory Readiness Gap',
-    scenarioSub: 'Self-directed investors → advisory invitation → AUM under advice',
+    scenario: 'Supplier Delay Recovery',
+    scenarioSub: 'Supplier delay → DC flow impact → store service risk → reroute / rebalance / premium-freight avoidance',
   },
   {
-    ucId: 'uc-idle-cash-activation',
+    ucId: 'uc-dc-capacity-stress',
     severity: 'HIGH',
     severityColor: 'orange',
     stage: 'SENSE',
-    title: 'Idle Cash Accumulation — 31,000 Investors Underinvested vs. Goals',
-    description: 'Cross-referencing payroll signals and balance data identifies 31,000 investors with >20% cash/money-market allocation and low recent investment activity. Average idle balance: $48,200. Cash Plus deepening and investment education eligible.',
-    sourceChip: 'PAYROLL FEED · TWIN REGISTRY · BALANCE SIGNALS',
-    agent: 'Market Sentinel',
-    date: '5/10/2026',
-    investorCount: 31000,
-    investorLabel: '31,000',
-    investorSub: '3,100 accounts',
+    title: 'DC Capacity Stress — Throughput Below Required Flow',
+    description: 'DC throughput and dock occupancy signals indicate constrained receiving capacity, creating backlog risk for inbound and outbound flows.',
+    detail: 'DC throughput has fallen below the required flow level while dock occupancy and backlog are increasing. TwinX identifies whether the issue can be absorbed within the same DC, whether volume should be shifted, or whether downstream replenishment needs to be resequenced.',
+    sourceChip: 'WMS / DC OPS FEED',
+    agent: 'Flow Sentinel',
+    date: '7/07/2026',
+    metricValue: '18%',
+    metricUnit: 'capacity variance',
+    metricStripLabel: 'Capacity variance',
+    metricSub: 'below required flow',
+    tags: ['DC THROUGHPUT CONSTRAINT', 'DOCK OCCUPANCY RISING', 'BACKLOG SPIKE', 'CAPACITY DERATE', 'FLOW SENTINEL'],
     precedents: 4,
     precedentNote: null,
-    confidence: 87,
-    window: '60-day response window',
-    trendLabel: 'IDLE CASH COHORT SIZE (ABOVE THRESHOLD)',
+    confidence: 88,
+    window: '12–24 hr response window',
+    trendLabel: 'DC THROUGHPUT STRESS TREND — Planned vs Available Capacity',
     trendData: [
-      { x: 'W-6', v: 0 }, { x: 'W-5', v: 400 }, { x: 'W-4', v: 1800 },
-      { x: 'W-3', v: 6000 }, { x: 'W-2', v: 14000 }, { x: 'W-1', v: 24000 }, { x: 'Now', v: 31000 },
+      { x: 'W-6', v: 2 }, { x: 'W-5', v: 4 }, { x: 'W-4', v: 6 },
+      { x: 'W-3', v: 9 }, { x: 'W-2', v: 12 }, { x: 'W-1', v: 15 }, { x: 'Now', v: 18 },
     ],
-    scenario: 'Idle Cash Activation',
-    scenarioSub: 'Cash-heavy investors → investment education → net new invested assets',
+    scenario: 'DC Capacity Shift Simulation',
+    scenarioSub: 'Capacity derate → backlog propagation → alternate DC/lane evaluation → recovery plan',
   },
   {
-    ucId: 'uc-diversification',
+    ucId: 'uc-premium-freight-risk',
+    severity: 'MEDIUM-HIGH',
+    severityColor: 'yellow',
+    stage: 'SENSE',
+    title: 'Premium Freight Risk Rising — ETA Breach and Time-to-Need Compression',
+    description: 'ETA variance, lane variability, and service-window pressure indicate increased probability of premium freight intervention.',
+    detail: 'ETA uncertainty and time-to-need compression indicate that selected loads may require premium freight if the current plan continues. TwinX evaluates whether lower-cost recovery options such as rerouting, carrier swap, load resequencing, or inventory rebalance can protect service before premium freight is triggered.',
+    sourceChip: 'TMS / CARRIER FEED',
+    agent: 'Cost Sentinel',
+    date: '7/07/2026',
+    metricValue: '27',
+    metricUnit: 'at-risk loads',
+    metricStripLabel: 'At-risk loads',
+    metricSub: 'premium freight exposure',
+    tags: ['ETA BREACH RISK', 'TIME-TO-NEED COMPRESSION', 'PREMIUM FREIGHT RISK', 'CARRIER ACCEPTANCE RISK', 'COST SENTINEL'],
+    precedents: 2,
+    precedentNote: 'Limited history',
+    confidence: 84,
+    window: '24 hr cost-control window',
+    trendLabel: 'PREMIUM FREIGHT RISK TREND — At-Risk Loads',
+    trendData: [
+      { x: 'W-6', v: 3 }, { x: 'W-5', v: 6 }, { x: 'W-4', v: 9 },
+      { x: 'W-3', v: 14 }, { x: 'W-2', v: 19 }, { x: 'W-1', v: 23 }, { x: 'Now', v: 27 },
+    ],
+    scenario: 'Premium Freight Avoidance',
+    scenarioSub: 'ETA breach risk → cost exposure → reroute / carrier swap / MEIO substitution',
+  },
+  {
+    ucId: 'uc-store-service-risk',
+    severity: 'HIGH',
+    severityColor: 'orange',
+    stage: 'SENSE',
+    title: 'Store Service Risk — At-Risk Replenishment Orders',
+    description: 'Delayed inbound flow plus low inventory cover indicates downstream service risk for priority stores and SKUs.',
+    detail: 'Delayed replenishment and low inventory cover indicate rising service risk across priority store/SKU combinations. TwinX connects transportation delays with inventory posture so planners can compare whether service should be protected through priority reroute, inventory rebalance, store allocation change, or selected premium freight.',
+    sourceChip: 'OMS / INVENTORY FEED',
+    agent: 'Service Sentinel',
+    date: '7/07/2026',
+    metricValue: '126',
+    metricUnit: 'stores at risk',
+    metricStripLabel: 'Stores at risk',
+    metricSub: 'priority store/SKU',
+    tags: ['STORE SERVICE RISK', 'LOW INVENTORY COVER', 'DELAYED REPLENISHMENT', 'STOCKOUT PROBABILITY', 'SERVICE SENTINEL'],
+    precedents: 5,
+    precedentNote: null,
+    confidence: 87,
+    window: '24–72 hr service window',
+    trendLabel: 'STORE SERVICE RISK TREND — At-Risk Stores / SKU-Locations',
+    trendData: [
+      { x: 'W-6', v: 12 }, { x: 'W-5', v: 24 }, { x: 'W-4', v: 40 },
+      { x: 'W-3', v: 62 }, { x: 'W-2', v: 88 }, { x: 'W-1', v: 108 }, { x: 'Now', v: 126 },
+    ],
+    scenario: 'Service Protection Simulation',
+    scenarioSub: 'Delayed replenishment → store service risk → priority allocation / reroute / rebalance',
+  },
+  {
+    ucId: 'uc-inventory-imbalance',
     severity: 'MEDIUM',
     severityColor: 'blue',
     stage: 'SENSE',
-    title: 'Concentration Risk — 24,000 Investors with Elevated Single-Asset Exposure',
-    description: 'Twin Registry flags 24,000 investors with >40% single-stock or single-sector concentration and low diversification engagement. Portfolio health-check and rebalancing education eligible based on behavioral profile.',
-    sourceChip: 'TWIN REGISTRY · PORTFOLIO COMPOSITION FEED',
-    agent: 'Market Sentinel',
-    date: '5/08/2026',
-    investorCount: 24000,
-    investorLabel: '24,000',
-    investorSub: '2,400 accounts',
-    precedents: 5,
+    title: 'Inventory Imbalance — Excess Upstream, Shortage Downstream',
+    description: 'MEIO signals show excess inventory in upstream echelons while downstream stores face stockout risk.',
+    detail: 'MEIO signals show that inventory is available in the network but not necessarily in the right echelon to protect downstream service. TwinX evaluates whether inventory should be held upstream, moved downstream, transferred laterally, or protected as safety stock while respecting capacity, MOQ, transfer feasibility, and service constraints.',
+    sourceChip: 'ERP / APS / INVENTORY LEDGER',
+    agent: 'MEIO Sentinel',
+    date: '7/07/2026',
+    metricValue: '8',
+    metricUnit: 'SKU families',
+    metricStripLabel: 'SKU families impacted',
+    metricSub: 'upstream excess / downstream risk',
+    tags: ['BUFFER DUPLICATION', 'SAFETY STOCK IMBALANCE', 'ON-HAND SHORTAGE', 'UPSTREAM EXCESS', 'MEIO SENTINEL'],
+    precedents: 4,
     precedentNote: null,
-    confidence: 83,
-    window: '45-day response window',
-    trendLabel: 'CONCENTRATION RISK COHORT SIZE',
+    confidence: 89,
+    window: '48–72 hr rebalance window',
+    trendLabel: 'INVENTORY IMBALANCE TREND — Upstream Excess vs Downstream Risk',
     trendData: [
-      { x: 'W-6', v: 0 }, { x: 'W-5', v: 300 }, { x: 'W-4', v: 1200 },
-      { x: 'W-3', v: 4500 }, { x: 'W-2', v: 11000 }, { x: 'W-1', v: 19000 }, { x: 'Now', v: 24000 },
+      { x: 'W-6', v: 1 }, { x: 'W-5', v: 2 }, { x: 'W-4', v: 3 },
+      { x: 'W-3', v: 4 }, { x: 'W-2', v: 6 }, { x: 'W-1', v: 7 }, { x: 'Now', v: 8 },
     ],
-    scenario: 'Portfolio Concentration / Diversification Gap',
-    scenarioSub: 'Concentrated investors → portfolio health education → diversification action',
-  },
-  {
-    ucId: 'uc-volatility-reassurance',
-    severity: 'CRITICAL',
-    severityColor: 'red',
-    stage: 'SENSE',
-    title: 'Anxiety Spike — 38,000 Investors Showing Volatility Panic Behavior',
-    description: 'Behavior Radar detects 38,000 investors with 3× login surge, active sell-flow research, and support contact spikes within the 12M equity-exposed population — a 3.1-sigma deviation from the 7-day baseline. CalmEngine protective window: 6 hours.',
-    sourceChip: 'VANGUARD BEHAVIOR RADAR · MARKET REGIME CLASSIFIER',
-    agent: 'Market Sentinel',
-    date: '4/15/2026',
-    investorCount: 38000,
-    investorLabel: '38,000',
-    investorSub: '3,800 accounts',
-    precedents: 2,
-    precedentNote: 'Limited history',
-    confidence: 92,
-    window: '6h–72h response window',
-    trendLabel: 'INVESTOR LOGIN SURGE (3×+ / 24H)',
-    trendData: [
-      { x: 'W-6', v: 0 }, { x: 'W-5', v: 80 }, { x: 'W-4', v: 400 },
-      { x: 'W-3', v: 2000 }, { x: 'W-2', v: 8000 }, { x: 'W-1', v: 22000 }, { x: 'Now', v: 38000 },
-    ],
-    scenario: 'Market Volatility Reassurance',
-    scenarioSub: 'Anxiety-spiking investors → reassurance education → panic-selling prevented',
-  },
-  {
-    ucId: 'uc-rollover-ira',
-    severity: 'HIGH',
-    severityColor: 'orange',
-    stage: 'SENSE',
-    title: 'Rollover Decision Window — 14,000 Investors in Active Transition Moment',
-    description: 'Reaction-based signals from secure site IRA/rollover content engagement, job-change events, and account activity detect 14,000 investors in an active transition moment. 45-day window before assets risk moving away. Education-classified response eligible.',
-    sourceChip: 'SECURE SITE CONTENT EVENTS · IRA SIGNALS · ACCOUNT FEED',
-    agent: 'Market Sentinel',
-    date: '5/05/2026',
-    investorCount: 14000,
-    investorLabel: '14,000',
-    investorSub: '1,400 accounts',
-    precedents: 3,
-    precedentNote: null,
-    confidence: 88,
-    window: '45-day response window',
-    trendLabel: 'IRA / ROLLOVER ENGAGEMENT SURGE',
-    trendData: [
-      { x: 'W-6', v: 0 }, { x: 'W-5', v: 120 }, { x: 'W-4', v: 700 },
-      { x: 'W-3', v: 2800 }, { x: 'W-2', v: 7000 }, { x: 'W-1', v: 11500 }, { x: 'Now', v: 14000 },
-    ],
-    scenario: 'Rollover / IRA Decision Moment',
-    scenarioSub: 'Transition-moment investors → rollover education → AUM retained',
+    scenario: 'MEIO Rebalance Simulation',
+    scenarioSub: 'Inventory imbalance → service/capital trade-off → optimal buffer placement / transfer plan',
   },
 ]
 
@@ -209,7 +226,7 @@ function SeverityBadge({ severity, color }) {
 }
 
 // ── Trend chart ────────────────────────────────────────────────────────────────
-function SignalTrendChart({ data, color }) {
+function SignalTrendChart({ data, color, unit }) {
   return (
     <ResponsiveContainer width="100%" height={140}>
       <AreaChart data={data} margin={{ top: 8, right: 8, bottom: 0, left: -20 }}>
@@ -233,7 +250,7 @@ function SignalTrendChart({ data, color }) {
         />
         <Tooltip
           contentStyle={{ fontSize: 11, borderRadius: 6, padding: '4px 10px' }}
-          formatter={v => [v.toLocaleString(), 'Investors']}
+          formatter={v => [v.toLocaleString(), unit || 'Value']}
         />
         <Area
           type="monotone"
@@ -281,11 +298,11 @@ export default function UseCaseCatalog({ onRunScenario }) {
                 <IconSparkles size={12} color="white" />
               </ThemeIcon>
               <Text fw={800} size="sm" tt="uppercase" style={{ letterSpacing: '0.06em' }}>
-                Personal Wealth Signal Scenarios for Vanguard's Investors
+                Supply Chain Resilience Signals for Kroger's Network
               </Text>
             </Group>
             <Text size="xs" c="dimmed" maw={580}>
-              Behavioral-finance-informed guidance · education-first outreach · ERISA-aligned fiduciary posture
+              Network Flow & Resilience · MEIO optimization · reroute, rebalance & premium-freight avoidance
             </Text>
           </Box>
           <Group gap="xs" wrap="wrap">
@@ -313,7 +330,7 @@ export default function UseCaseCatalog({ onRunScenario }) {
             <Select
               size="xs"
               radius="md"
-              data={['All', 'CRITICAL', 'HIGH', 'MEDIUM']}
+              data={['All', 'HIGH', 'MEDIUM-HIGH', 'MEDIUM']}
               value={signalFilter}
               onChange={v => setSignalFilter(v || 'All')}
               styles={{ input: { fontSize: 12 } }}
@@ -352,7 +369,7 @@ export default function UseCaseCatalog({ onRunScenario }) {
                       <Group gap="xs" mb={4}>
                         <Group gap={4}>
                           <IconUsers size={11} />
-                          <Text size="10px">{sig.investorLabel} investors</Text>
+                          <Text size="10px">{sig.metricValue} {sig.metricUnit}</Text>
                         </Group>
                         <Text size="10px" c="dimmed">·</Text>
                         <Text size="10px">{sig.precedents} precedents</Text>
@@ -396,9 +413,9 @@ export default function UseCaseCatalog({ onRunScenario }) {
                   </Box>
                 </Box>
                 <Box>
-                  <Text fw={800} size="xl" c={selectedSignal.severityColor}>{selectedSignal.investorLabel}</Text>
-                  <Text size="10px" c="dimmed">Investors in scope</Text>
-                  <Text size="10px" c="dimmed">{selectedSignal.investorSub}</Text>
+                  <Text fw={800} size="xl" c={selectedSignal.severityColor}>{selectedSignal.metricValue}</Text>
+                  <Text size="10px" c="dimmed">{selectedSignal.metricStripLabel}</Text>
+                  <Text size="10px" c="dimmed">{selectedSignal.metricSub}</Text>
                 </Box>
                 <Box>
                   <Text fw={800} size="xl" c={selectedSignal.precedentNote ? 'orange' : 'dark'}>
@@ -420,6 +437,17 @@ export default function UseCaseCatalog({ onRunScenario }) {
                 <Text size="10px" c="dimmed">{selectedSignal.date}</Text>
               </Group>
 
+              {/* Signal tag chips */}
+              {selectedSignal.tags && (
+                <Group gap={6} mb="xs" wrap="wrap">
+                  {selectedSignal.tags.map(tag => (
+                    <Badge key={tag} size="xs" variant="light" color={selectedSignal.severityColor} style={{ letterSpacing: '0.03em' }}>
+                      {tag}
+                    </Badge>
+                  ))}
+                </Group>
+              )}
+
               <Divider mb="xs" />
 
               {/* Trend chart */}
@@ -428,10 +456,10 @@ export default function UseCaseCatalog({ onRunScenario }) {
                   {selectedSignal.trendLabel}
                 </Text>
                 <Text size="10px" c={selectedSignal.severityColor} fw={700} style={{ letterSpacing: '0.04em' }}>
-                  CURRENT: {selectedSignal.investorLabel}
+                  CURRENT: {selectedSignal.metricValue} {selectedSignal.metricUnit}
                 </Text>
               </Group>
-              <SignalTrendChart data={selectedSignal.trendData} color={selectedSignal.severityColor} />
+              <SignalTrendChart data={selectedSignal.trendData} color={selectedSignal.severityColor} unit={selectedSignal.metricUnit} />
 
               <Divider mt="xs" mb="xs" />
 
@@ -439,7 +467,7 @@ export default function UseCaseCatalog({ onRunScenario }) {
               <Text size="10px" c="dimmed" fw={700} tt="uppercase" mb={4} style={{ letterSpacing: '0.07em' }}>
                 Signal Detail
               </Text>
-              <Text size="xs" c="dimmed" mb="xs">{selectedSignal.description}</Text>
+              <Text size="xs" c="dimmed" mb="xs">{selectedSignal.detail || selectedSignal.description}</Text>
 
               {/* Response window */}
               <Text size="xs" c="dimmed" mb="md">

@@ -74,7 +74,7 @@ const PAGE_COMPONENTS = {
   'govern-dashboard':    GovernDashboard,
 }
 
-// ── Top header — "Marketing OS · Powered by TwinX" ────────────────────────
+// ── Top header — "Supply OS · Powered by TwinX" ───────────────────────────
 function TopHeader({ navCollapsed, onToggleNav, isWorkflowActive, onExitWorkflow }) {
   return (
     <Group h="100%" px="md" justify="space-between" wrap="nowrap">
@@ -95,10 +95,10 @@ function TopHeader({ navCollapsed, onToggleNav, isWorkflowActive, onExitWorkflow
           </Box>
           <Stack gap={0}>
             <Text size="md" fw={700} lh={1.1} style={{ letterSpacing: '-0.01em' }}>
-              Marketing OS for Vanguard Personal Wealth
+              Supply OS for Kroger Supply Chain Resilience
             </Text>
             <Text size="10px" c="dimmed" lh={1.2} style={{ letterSpacing: '0.04em' }}>
-              From static investor journeys to adaptive decision intelligence · Powered by TwinX™
+              From static supply plans to adaptive network decision intelligence · Powered by TwinX™
             </Text>
           </Stack>
         </Group>
@@ -116,7 +116,7 @@ function TopHeader({ navCollapsed, onToggleNav, isWorkflowActive, onExitWorkflow
             <IconHelpCircle size={18} stroke={1.5} />
           </ActionIcon>
         </Tooltip>
-        <Avatar size={30} radius="xl" color="vanguardRed" variant="filled">V</Avatar>
+        <Avatar size={30} radius="xl" color="vanguardRed" variant="filled">K</Avatar>
       </Group>
     </Group>
   )

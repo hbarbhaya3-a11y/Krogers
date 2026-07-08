@@ -5,6 +5,36 @@
 
 ---
 
+## Session 5 — Rebrand to Supply OS for Kroger + Supply-Chain Signals — 2026-07-08
+
+### Build Status
+- `npm run build` — **PASSED** — 7,683 modules, 0 errors, built in 14.78s
+
+### Added
+- **Live Signals rebuilt for Kroger Supply Chain Resilience** (`src/pages/UseCaseCatalog.jsx`)
+  - Replaced the five Personal Wealth signals with five Network Flow & Resilience + MEIO signals sourced from the `01_Signal_Cards` brief:
+    1. **Supplier Delay Surge** — High-Volume DC Flow at Risk (HIGH · 42 delayed POs · SUPPLIER / ASN FEED · 24–48 hr recovery window)
+    2. **DC Capacity Stress** — Throughput Below Required Flow (HIGH · 18% capacity variance · WMS / DC OPS FEED · 12–24 hr response window)
+    3. **Premium Freight Risk Rising** — ETA Breach & Time-to-Need Compression (MEDIUM-HIGH · 27 at-risk loads · TMS / CARRIER FEED · 24 hr cost-control window)
+    4. **Store Service Risk** — At-Risk Replenishment Orders (HIGH · 126 stores at risk · OMS / INVENTORY FEED · 24–72 hr service window)
+    5. **Inventory Imbalance** — Excess Upstream, Shortage Downstream (MEDIUM · 8 SKU families · ERP / APS / INVENTORY LEDGER · 48–72 hr rebalance window)
+  - Each signal now carries `detail` (expanded right-block copy), `tags` (sentinel tag chips), `metricValue`/`metricUnit`/`metricStripLabel`/`metricSub`, per-signal confidence, source chip, sensing agent (Network/Flow/Cost/Service/MEIO Sentinel), trend series, and a ready-to-run scenario name.
+  - Right-block detail now renders the sentinel tag chips and the fuller `detail` narrative; trend tooltip and metric labels are supply-chain aware (no longer "Investors").
+  - Severity filter updated to `All / HIGH / MEDIUM-HIGH / MEDIUM`.
+
+### Changed
+- **Application rebranded "Marketing OS for Vanguard Personal Wealth" → "Supply OS for Kroger Supply Chain Resilience"**
+  - `src/App.jsx` — top-header title + subtitle ("From static supply plans to adaptive network decision intelligence · Powered by TwinX™"); avatar monogram V → K.
+  - `index.html` — `<title>` + description/OG/Twitter meta.
+  - `package.json` — `name` → `supply-os-for-kroger`, description updated.
+  - `src/pages/UseCaseCatalog.jsx` — banner heading → "Supply Chain Resilience Signals for Kroger's Network" and subtitle → "Network Flow & Resilience · MEIO optimization · reroute, rebalance & premium-freight avoidance".
+
+### Watch List
+- **Run-scenario wiring** — the five new scenario names (Supplier Delay Recovery, DC Capacity Shift Simulation, Premium Freight Avoidance, Service Protection Simulation, MEIO Rebalance Simulation) do not yet exist in `src/data/usecases.js`, so the "Run scenario" button is currently a no-op. Downstream workflow panels still carry Vanguard copy. Per user direction these page-level changes are deferred to follow-up prompts.
+- TwinX engine branding retained intentionally ("Powered by TwinX™").
+
+---
+
 ## Session 4 — Plan Design Optimizer (UC-E v0.2.0-vanguard) — 2026-04-30
 
 ### Build Status
