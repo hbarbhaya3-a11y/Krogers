@@ -211,6 +211,12 @@ export const II_RECOMMENDATIONS = [
       ],
       guardrails: ['Service target protected', 'MOQ hard constraint', 'Store space hard constraint', 'Planner approval'],
       expected: 'Service 94.1% → 96.8%; stockout 18.6% → 10.4%; network inventory −$70M; carrying cost −$7M/yr.',
+      moves: [
+        { node: 'DC-01 (Upstream)', sku: 'Dairy', qty: '−4,200 units', ss: '8.0 → 7.0 days', action: 'Right-size upstream safety stock' },
+        { node: 'DC-04 (Upstream)', sku: 'Frozen', qty: '−3,100 units', ss: '9.0 → 8.0 days', action: 'Right-size upstream safety stock' },
+        { node: 'Store cluster A (32 stores)', sku: 'Dairy', qty: '+1,800 units', ss: '2.1 → 3.0 days', action: 'Uplift store safety stock' },
+        { node: 'Store cluster B (28 stores)', sku: 'Beverages', qty: '+1,500 units', ss: '2.3 → 3.1 days', action: 'Uplift store safety stock' },
+      ],
     },
   },
   {
@@ -245,6 +251,12 @@ export const II_RECOMMENDATIONS = [
       ],
       guardrails: ['Transfer feasibility & cycle time', 'MOQ & supplier constraints', 'Store space limits', 'Planner approval'],
       expected: 'Service 94.1% → 97.2%; stockout −9.9 pts; network inventory −$110M; working-capital release +$110M.',
+      moves: [
+        { node: 'DC-02 → Cluster C (24 stores)', sku: 'Dry grocery', qty: '6,400 units', ss: '+0.8 days', action: 'DC-to-store rebalance' },
+        { node: 'DC-05 → Cluster A (32 stores)', sku: 'Beverages', qty: '5,200 units', ss: '+0.7 days', action: 'DC-to-store rebalance' },
+        { node: 'DC-01 (de-dup)', sku: 'Dairy', qty: '−3,600 units', ss: '−1.2 days', action: 'Remove duplicated buffer' },
+        { node: 'DC-07 (de-dup)', sku: 'Snacks', qty: '−2,900 units', ss: '−1.0 days', action: 'Remove duplicated buffer' },
+      ],
     },
   },
   {
@@ -282,6 +294,13 @@ export const II_RECOMMENDATIONS = [
       ],
       guardrails: ['Scoped nodes (10 DCs + stores)', 'MOQ & supplier constraints', 'Store space', 'Transfer feasibility & cycle time', 'Finance-approved carrying cost', 'Planner + finance approval'],
       expected: 'Service 94.1% → 98.0%; stockout 18.6% → 6.9%; network inventory −$140M; working-capital release +$140M; duplication 1.34 → 1.08.',
+      moves: [
+        { node: 'DC-01 / DC-04 (right-size)', sku: 'Dairy, Frozen', qty: '−7,300 units', ss: '−1.1 days', action: 'Right-size upstream buffer' },
+        { node: 'DC-02 → Cluster C (24 stores)', sku: 'Dry grocery', qty: '6,400 units', ss: '+0.8 days', action: 'DC-to-store rebalance' },
+        { node: 'DC-05 → Cluster A (32 stores)', sku: 'Beverages', qty: '5,200 units', ss: '+0.7 days', action: 'DC-to-store rebalance' },
+        { node: 'Store clusters A/B (60 stores)', sku: 'Priority SKUs', qty: '+3,300 units', ss: '+0.9 days', action: 'Reorder-point uplift 5–7%' },
+        { node: 'DC-07 (de-dup)', sku: 'Snacks', qty: '−2,900 units', ss: '−1.0 days', action: 'Remove duplicated buffer' },
+      ],
     },
   },
 ]
