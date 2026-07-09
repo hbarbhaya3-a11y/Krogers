@@ -67,6 +67,10 @@ function planToText(r) {
   const L = [`# ${p.title}`, '', `Recommendation: ${r.cardTitle}`, '', 'Objective', p.objective, '', 'Phased actions']
   p.phases.forEach(ph => { L.push('', ph.name); ph.actions.forEach(a => L.push(`  - ${a}`)) })
   L.push('', 'Changes'); p.changes.forEach(c => L.push(`  - ${c.area}: ${c.change}`))
+  if (p.moves) {
+    L.push('', 'Execution detail (node / SKU / quantity / safety stock / action)')
+    p.moves.forEach(m => L.push(`  - ${m.node} | ${m.sku} | ${m.qty} | ${m.ss} | ${m.action}`))
+  }
   L.push('', 'Guardrails'); p.guardrails.forEach(g => L.push(`  - ${g}`))
   L.push('', 'Expected impact', p.expected)
   return L.join('\n')
@@ -114,6 +118,19 @@ function StrategyModal({ reco, onClose }) {
                 <Table.Tbody>{p.changes.map(c => <Table.Tr key={c.area}><Table.Td fw={600}>{c.area}</Table.Td><Table.Td>{c.change}</Table.Td></Table.Tr>)}</Table.Tbody>
               </Table>
             </Box>
+            {p.moves && (
+              <Box>
+                <Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>Execution detail — nodes, SKUs & quantities</Text>
+                <Table fz="xs" withTableBorder withColumnBorders striped>
+                  <Table.Thead><Table.Tr><Table.Th>DC / Node</Table.Th><Table.Th>SKU family</Table.Th><Table.Th>Quantity</Table.Th><Table.Th>Safety stock</Table.Th><Table.Th>Action</Table.Th></Table.Tr></Table.Thead>
+                  <Table.Tbody>{p.moves.map((m, i) => (
+                    <Table.Tr key={i}><Table.Td fw={600}>{m.node}</Table.Td><Table.Td>{m.sku}</Table.Td>
+                      <Table.Td c={/^[−-]/.test(m.qty.trim()) ? 'orange' : 'green'} fw={600}>{m.qty}</Table.Td>
+                      <Table.Td>{m.ss}</Table.Td><Table.Td c="dimmed">{m.action}</Table.Td></Table.Tr>
+                  ))}</Table.Tbody>
+                </Table>
+              </Box>
+            )}
             <Box><Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>Guardrails</Text><Group gap={6} wrap="wrap">{p.guardrails.map(g => <Badge key={g} size="xs" variant="light" color={reco.tone}>{g}</Badge>)}</Group></Box>
             <Alert color={reco.tone} variant="light" p="xs"><Text size="xs"><b>Expected impact:</b> {p.expected}</Text></Alert>
           </Stack>
@@ -143,7 +160,6 @@ function Screen1({ onContinue }) {
         <Paper withBorder p="md" radius="md">
           <SectionHead icon={IconBolt} title="Signal detail" />
           <Text size="xs" c="dimmed" mt="xs">{s.detail}</Text>
-          <Text size="10px" c="dimmed" mt="xs">{s.detailNote}</Text>
         </Paper>
       </SimpleGrid>
 
@@ -155,20 +171,9 @@ function Screen1({ onContinue }) {
         </Table>
       </Paper>
 
-      <Paper withBorder p="md" radius="md">
-        <SectionHead icon={IconChartBar} title="Historical precedents" color="grape" />
-        <Table fz="xs" mt="xs" withTableBorder withColumnBorders striped>
-          <Table.Thead><Table.Tr><Table.Th>Matched episode</Table.Th><Table.Th>Similarity</Table.Th><Table.Th>Prior action</Table.Th><Table.Th>Prior outcome</Table.Th></Table.Tr></Table.Thead>
-          <Table.Tbody>{D.II_PRECEDENTS.map((p, i) => <Table.Tr key={i}><Table.Td fw={600}>{p.episode}</Table.Td><Table.Td><Text span fw={700} c="grape">{p.similarity}%</Text></Table.Td><Table.Td>{p.action}</Table.Td><Table.Td c="green">{p.outcome}</Table.Td></Table.Tr>)}</Table.Tbody>
-        </Table>
-      </Paper>
-
       <Paper withBorder radius="md" p="md" style={{ borderLeft: '3px solid var(--mantine-color-indigo-5)', background: 'var(--mantine-color-indigo-light)' }}>
         <Group gap="xs" mb={4}><ThemeIcon size={22} radius="md" variant="gradient" gradient={{ from: 'indigo', to: 'cyan', deg: 135 }}><IconTargetArrow size={13} color="white" /></ThemeIcon><Text fw={700} size="sm">Recommended Hypothesis</Text></Group>
         <Text size="sm" style={{ lineHeight: 1.7 }}>{D.II_HYPOTHESIS}</Text>
-        <Divider my="sm" />
-        <Text size="xs"><Text span fw={700}>Recommended next step: </Text>{D.II_INIT_RECO.nextStep}</Text>
-        <Text size="xs" c="dimmed" mt={2}><Text span fw={600} c="dark">Simulation path: </Text>{D.II_INIT_RECO.path}</Text>
       </Paper>
       <ContinueButton onClick={onContinue} label="Continue to Objectives" />
     </Stack>
@@ -317,7 +322,6 @@ function Screen5({ ws, setWs, onContinue }) {
 function Screen6({ onApprove }) {
   const { goToStep } = useUseCase()
   const a = D.II_APPROVAL
-  const handle = (label) => { if (/Approve & Send/i.test(label)) onApprove?.('Approved — Balanced MEIO Policy Bundle'); else if (/Modify/i.test(label)) goToStep(2) }
   return (
     <Stack gap="md">
       <Paper withBorder p="md" radius="md" style={{ borderLeft: '3px solid var(--mantine-color-yellow-6)' }}>
@@ -337,10 +341,11 @@ function Screen6({ onApprove }) {
       </Paper>
       <Paper withBorder p="md" radius="md" style={{ background: 'var(--mantine-color-green-light)' }}><Text size="xs" fw={700} mb={2}>Why this recommendation is selected</Text><Text size="xs" c="dimmed">{a.rationale}</Text></Paper>
       <Group justify="flex-end" gap="sm" wrap="wrap">
-        {a.buttons.map(b => {
-          const primary = /Approve & Send/i.test(b)
-          return <Button key={b} size={primary ? 'md' : 'xs'} color={primary ? 'green' : 'gray'} variant={primary ? 'filled' : 'light'} leftSection={primary ? <IconShieldCheck size={16} /> : undefined} onClick={() => handle(b)}>{b}</Button>
-        })}
+        <Button size="xs" variant="subtle" color="gray" onClick={() => goToStep(2)}>Modify Policy Bundle</Button>
+        <Button size="xs" variant="light" color="gray">Send for Finance Review</Button>
+        <Button size="xs" variant="light" color="gray">Reject Recommendation</Button>
+        <Button size="xs" variant="light" color="grape" leftSection={<IconDeviceFloppy size={14} />}>Save as Draft</Button>
+        <Button size="md" color="green" leftSection={<IconShieldCheck size={16} />} onClick={() => onApprove?.('Approved — Balanced MEIO Policy Bundle')}>Approve &amp; Send to Execution</Button>
       </Group>
     </Stack>
   )
@@ -352,7 +357,6 @@ function Screen7({ ws, setWs, onExit }) {
   const goHome = onExit || exit
   const saved = ws.iiSaved
   const sv = D.II_SAVE
-  const iconFor = (o) => /Save/i.test(o) ? <IconDeviceFloppy size={14} /> : /Export/i.test(o) ? <IconFileExport size={14} /> : /Frontier|Dashboard/i.test(o) ? <IconChartHistogram size={14} /> : <IconRoute size={14} />
   return (
     <Stack gap="md">
       <Paper withBorder p="md" radius="md" style={{ borderLeft: '3px solid var(--mantine-color-grape-6)' }}>
@@ -374,19 +378,10 @@ function Screen7({ ws, setWs, onExit }) {
         <Group gap={6} mt="xs" wrap="wrap">{sv.tags.map(t => <Badge key={t} size="xs" color="grape" variant="light">{t}</Badge>)}</Group>
       </Paper>
       <Group justify="flex-end" gap="sm" wrap="wrap">
-        {sv.exitOptions.map(o => {
-          const isExit = /Exit Guided Flow/i.test(o)
-          const isSave = /Save to Scenario Library/i.test(o)
-          return (
-            <Button key={o} size={isExit ? 'md' : 'xs'} variant={isExit ? 'filled' : 'light'}
-              color={isExit ? 'green' : isSave ? 'grape' : 'gray'}
-              leftSection={isExit ? <IconCheck size={16} /> : iconFor(o)}
-              disabled={isSave && saved}
-              onClick={() => { if (isExit) goHome(); else if (isSave) setWs(s => ({ ...s, iiSaved: true })) }}>
-              {isSave && saved ? 'Saved to library' : o}
-            </Button>
-          )
-        })}
+        <Button size="xs" variant="light" color="grape" leftSection={<IconDeviceFloppy size={14} />} disabled={saved} onClick={() => setWs(s => ({ ...s, iiSaved: true }))}>{saved ? 'Saved to library' : 'Save to Scenario Library'}</Button>
+        <Button size="xs" variant="subtle" color="gray" leftSection={<IconFileExport size={14} />}>Export Decision Log</Button>
+        <Button size="xs" variant="light" color="violet" leftSection={<IconChartHistogram size={14} />}>Open Efficient Frontier Dashboard</Button>
+        <Button size="md" color="green" leftSection={<IconCheck size={16} />} onClick={goHome}>Exit Guided Flow</Button>
       </Group>
     </Stack>
   )
