@@ -3,49 +3,49 @@ import { IconTrendingUp, IconDatabase, IconUsers, IconShieldCheck, IconInfoCircl
 import { BarChart, LineChart } from '@mantine/charts'
 
 const KPI_TILES = [
-  { label: 'Engagement Rate', value: '31%', sub: 'treatment cohort · 30-day window', color: 'teal', icon: IconTrendingUp },
-  { label: 'AUM Under Advice', value: '$31.8M', sub: '+7.6% vs holdout baseline', color: 'violet', icon: IconDatabase },
-  { label: 'Advisory Starts', value: '+440', sub: 'incremental vs do-nothing', color: 'orange', icon: IconUsers },
-  { label: 'Investors Converted', value: '919', sub: 'advisory or portfolio review action', color: 'green', icon: IconShieldCheck },
+  { label: 'Service Attainment', value: '97.4%', sub: 'treatment cohort · 30-day window', color: 'teal', icon: IconTrendingUp },
+  { label: 'Inventory Released', value: '$120M', sub: '+7.6% vs holdout baseline', color: 'violet', icon: IconDatabase },
+  { label: 'Stores Recovered', value: '+440', sub: 'incremental vs do-nothing', color: 'orange', icon: IconUsers },
+  { label: 'Recovery Actions Executed', value: '919', sub: 'reroute, transfer, or expedite', color: 'green', icon: IconShieldCheck },
 ]
 
 const SHAPLEY_DATA = [
-  { name: 'Portfolio Review Card', contribution: 38 },
-  { name: 'Email Education', contribution: 27 },
-  { name: 'App Push Nudge', contribution: 18 },
-  { name: 'Secure Site Insight', contribution: 11 },
-  { name: 'Advisor Consultation Brief', contribution: 6 },
+  { name: 'MEIO Rebalance', contribution: 38 },
+  { name: 'Priority Reroute', contribution: 27 },
+  { name: 'Allocation Resequence', contribution: 18 },
+  { name: 'Safety-Stock Uplift', contribution: 11 },
+  { name: 'Selective Expedite', contribution: 6 },
 ]
 
 const TREATMENT_VS_HOLDOUT = [
-  { episode: 'Advisory Readiness Gap', treatment: 31, holdout: 7 },
-  { episode: 'Idle Cash Activation', treatment: 26, holdout: 6 },
-  { episode: 'Volatility Response', treatment: 19, holdout: 5 },
+  { episode: 'Store Service Protection', treatment: 31, holdout: 7 },
+  { episode: 'MEIO Inventory Rebalance', treatment: 26, holdout: 6 },
+  { episode: 'Premium Freight Avoidance', treatment: 19, holdout: 5 },
 ]
 
 const AUM_TREND = [
-  { day: 'Day 0', treatment: 0, holdout: 0 },
-  { day: 'Day 7', treatment: 4.2, holdout: 0.8 },
-  { day: 'Day 14', treatment: 11.8, holdout: 1.4 },
-  { day: 'Day 21', treatment: 23.4, holdout: 2.1 },
-  { day: 'Day 30', treatment: 31.8, holdout: 2.9 },
+  { day: 'Hour 0', treatment: 0, holdout: 0 },
+  { day: 'Hour 18', treatment: 4.2, holdout: 0.8 },
+  { day: 'Hour 36', treatment: 11.8, holdout: 1.4 },
+  { day: 'Hour 54', treatment: 23.4, holdout: 2.1 },
+  { day: 'Hour 72', treatment: 31.8, holdout: 2.9 },
 ]
 
 const SEGMENT_ATTRIBUTION = [
-  { segment: 'Planning-Intent, Unadvised', investors: 11800, engagementRate: '34%', advisoryStarts: 188, aumLift: '$12.4M', shapleyShare: '39%', color: 'orange' },
-  { segment: 'Cash-Heavy, Low-Conviction', investors: 7900, engagementRate: '29%', advisoryStarts: 94, aumLift: '$8.1M', shapleyShare: '26%', color: 'yellow' },
-  { segment: 'Multi-Fund Complexity', investors: 6200, engagementRate: '26%', advisoryStarts: 72, aumLift: '$5.9M', shapleyShare: '19%', color: 'blue' },
-  { segment: 'Volatility Recheckers', investors: 5800, engagementRate: '38%', advisoryStarts: 48, aumLift: '$3.2M', shapleyShare: '10%', color: 'indigo' },
-  { segment: 'Retirement Income Planners', investors: 4700, engagementRate: '22%', advisoryStarts: 28, aumLift: '$1.6M', shapleyShare: '5%', color: 'teal' },
-  { segment: 'Tax-Efficiency Seekers + Others', investors: 5600, engagementRate: '18%', advisoryStarts: 10, aumLift: '$0.6M', shapleyShare: '1%', color: 'green' },
+  { segment: 'Priority Store Clusters', investors: 11800, engagementRate: '97.6%', advisoryStarts: 188, aumLift: '$12.4M', shapleyShare: '39%', color: 'orange' },
+  { segment: 'Over-buffered Upstream / DC', investors: 7900, engagementRate: '95.4%', advisoryStarts: 94, aumLift: '$8.1M', shapleyShare: '26%', color: 'yellow' },
+  { segment: 'At-Risk Transport Lanes', investors: 6200, engagementRate: '96.1%', advisoryStarts: 72, aumLift: '$5.9M', shapleyShare: '19%', color: 'blue' },
+  { segment: 'High-variance Demand SKUs', investors: 5800, engagementRate: '94.8%', advisoryStarts: 48, aumLift: '$3.2M', shapleyShare: '10%', color: 'indigo' },
+  { segment: 'Slow-mover SKU-locations', investors: 4700, engagementRate: '93.2%', advisoryStarts: 28, aumLift: '$1.6M', shapleyShare: '5%', color: 'teal' },
+  { segment: 'Fresh / Aging-sensitive SKUs', investors: 5600, engagementRate: '92.5%', advisoryStarts: 10, aumLift: '$0.6M', shapleyShare: '1%', color: 'green' },
 ]
 
 const MODEL_UPDATE = {
-  prior: 'Advisory readiness — planning-intent segment',
-  before: '12%',
-  after: '34%',
-  twinsEnriched: 42000,
-  episode: 'Advisory Readiness Gap · 30-day window · 6 behavioral segments',
+  prior: 'Store service-risk — priority store cluster',
+  before: '76%',
+  after: '90%',
+  twinsEnriched: 126,
+  episode: 'Store Service Protection · 72-hr window · 6 store/SKU cohorts',
 }
 
 function KpiTile({ label, value, sub, color, icon: Icon }) {
@@ -70,7 +70,7 @@ export default function OutcomeAttribution() {
     <Stack gap="md">
       <Stack gap={2}>
         <Text size="xl" fw={800} c="grape">Outcome Attribution</Text>
-        <Text size="sm" c="dimmed">Shapley attribution and causal measurement across advisory conversion, AUM uplift, and engagement — treatment vs. holdout controlled measurement on every deployed intervention</Text>
+        <Text size="sm" c="dimmed">Shapley attribution and causal measurement across service attainment, inventory release, and recovery time — treatment vs. holdout controlled measurement on every executed recovery action</Text>
       </Stack>
 
       <SimpleGrid cols={4} spacing="sm">
@@ -82,13 +82,13 @@ export default function OutcomeAttribution() {
         <Paper withBorder p="md" radius="md">
           <Stack gap="xs">
             <Group gap="xs">
-              <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>Shapley Attribution — Content Contribution to AUM Outcomes</Text>
+              <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>Shapley Attribution — Recovery Lever Contribution to Outcomes</Text>
             </Group>
             <BarChart
               h={220}
               data={SHAPLEY_DATA}
               dataKey="name"
-              series={[{ name: 'contribution', color: 'green', label: 'Contribution to AUM Lift (%)' }]}
+              series={[{ name: 'contribution', color: 'green', label: 'Contribution to Recovery (%)' }]}
               tickLine="none"
               gridAxis="x"
             />
@@ -98,7 +98,7 @@ export default function OutcomeAttribution() {
         {/* Treatment vs holdout — last 3 episodes */}
         <Paper withBorder p="md" radius="md">
           <Stack gap="xs">
-            <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>Treatment vs. Holdout — Last 3 Episodes</Text>
+            <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>Treatment vs. Holdout — Last 3 Scenarios</Text>
             <BarChart
               h={220}
               data={TREATMENT_VS_HOLDOUT}
@@ -116,7 +116,7 @@ export default function OutcomeAttribution() {
         {/* AUM accumulation curve */}
         <Paper withBorder p="md" radius="md">
           <Stack gap="xs">
-            <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>AUM Accumulation — Treatment vs. Holdout ($M)</Text>
+            <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>Inventory Released — Treatment vs. Holdout ($M)</Text>
             <LineChart
               h={200}
               data={AUM_TREND}
@@ -134,7 +134,7 @@ export default function OutcomeAttribution() {
         {/* Twin model update */}
         <Paper withBorder p="md" radius="md">
           <Stack gap="sm">
-            <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>Learning System — Twin Model Update</Text>
+            <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>Learning System — Model Update</Text>
             <Paper withBorder p="sm" radius="md" style={{ background: 'var(--mantine-color-violet-light)' }}>
               <Stack gap="xs">
                 <Group justify="space-between">
@@ -153,11 +153,11 @@ export default function OutcomeAttribution() {
                   </Stack>
                 </Group>
                 <Divider />
-                <Text size="xs" c="dimmed">{MODEL_UPDATE.twinsEnriched.toLocaleString()} investor twins enriched · {MODEL_UPDATE.episode}</Text>
+                <Text size="xs" c="dimmed">{MODEL_UPDATE.twinsEnriched.toLocaleString()} store/SKU priors updated · {MODEL_UPDATE.episode}</Text>
               </Stack>
             </Paper>
             <Text size="xs" c="dimmed" style={{ lineHeight: 1.5 }}>
-              Every investor that engaged in this episode has an updated behavioral prior. The next signal matching this pattern will benefit from richer model calibration.
+              Every store/SKU that entered this scenario has an updated risk prior. The next signal matching this pattern will benefit from richer model calibration.
             </Text>
           </Stack>
         </Paper>
@@ -166,12 +166,12 @@ export default function OutcomeAttribution() {
       {/* Segment-level attribution table */}
       <Paper withBorder p="md" radius="md">
         <Stack gap="sm">
-          <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>Segment-Level Attribution — Advisory Readiness Gap Episode</Text>
+          <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>Cohort-Level Attribution — Store Service Protection Scenario</Text>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
               <thead>
                 <tr style={{ borderBottom: '1px solid var(--mantine-color-gray-3)' }}>
-                  {['Segment', 'Investors', 'Engagement Rate', 'Advisory Starts', 'AUM Lift', 'Shapley Share'].map(h => (
+                  {['Cohort', 'Nodes', 'Service Attainment', 'Stores Recovered', 'Inventory', 'Shapley Share'].map(h => (
                     <th key={h} style={{ padding: '6px 12px', textAlign: 'left', color: 'var(--mantine-color-dimmed)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', fontSize: 10 }}>{h}</th>
                   ))}
                 </tr>
@@ -199,7 +199,7 @@ export default function OutcomeAttribution() {
       </Paper>
 
       <Alert color="teal" variant="light" icon={<IconInfoCircle size={14} />} p="sm">
-        <Text size="xs">Always-on 10% holdout group — causal estimation, not correlation. Holdout investors receive no interventions during the episode measurement window.</Text>
+        <Text size="xs">Always-on 10% holdout lanes/nodes — causal estimation, not correlation. Holdout nodes receive no recovery actions during the scenario measurement window.</Text>
       </Alert>
     </Stack>
   )

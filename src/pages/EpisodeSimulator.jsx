@@ -4,27 +4,27 @@ import { IconPlayerPlay, IconSparkles, IconRadar, IconBrain, IconChartBar, IconS
 import { BarChart } from '@mantine/charts'
 
 const EPISODES = [
-  { value: 'advisory-gap', label: 'Advisory Readiness Gap — June 2026' },
-  { value: 'idle-cash', label: 'Idle Cash Activation — Q2 2026' },
-  { value: 'volatility', label: 'Volatility Response — Apr 2026' },
-  { value: 'retirement-income', label: 'Retirement Income Planning — Q3 2026' },
-  { value: 'custom', label: 'Custom episode…' },
+  { value: 'advisory-gap', label: 'Store Service Protection — June 2026' },
+  { value: 'idle-cash', label: 'MEIO Inventory Rebalance — Q2 2026' },
+  { value: 'volatility', label: 'Premium Freight Avoidance — Apr 2026' },
+  { value: 'retirement-income', label: 'DC Capacity Shift — Q3 2026' },
+  { value: 'custom', label: 'Custom scenario…' },
 ]
 
 const COHORTS = [
-  { value: 'all', label: 'All Investor Cohorts' },
-  { value: 'planning-intent', label: 'Planning-Intent, Unadvised Investors' },
-  { value: 'cash-heavy', label: 'Cash-Heavy, Low-Conviction Savers' },
-  { value: 'volatility', label: 'Volatility-Triggered Recheckers' },
-  { value: 'retirement', label: 'Retirement Income Planners' },
-  { value: 'tax', label: 'Tax-Efficiency Seekers' },
+  { value: 'all', label: 'All Store / SKU Cohorts' },
+  { value: 'planning-intent', label: 'Priority Store Clusters (service-risk)' },
+  { value: 'cash-heavy', label: 'Over-buffered Upstream / DC Nodes' },
+  { value: 'volatility', label: 'High-variance Demand SKUs' },
+  { value: 'retirement', label: 'Slow-mover SKU-locations' },
+  { value: 'tax', label: 'Fresh / Aging-sensitive SKUs' },
 ]
 
 const OBJECTIVES = [
-  { value: 'advisory', label: 'Maximise Advisory Appointment Starts' },
-  { value: 'aum', label: 'Maximise AUM Under Advice' },
-  { value: 'cash', label: 'Maximise Cash-to-Investment Conversion' },
-  { value: 'retention', label: 'Minimise Asset Outflow' },
+  { value: 'advisory', label: 'Maximise Service Attainment / In-Stock' },
+  { value: 'aum', label: 'Minimise Total Network Inventory' },
+  { value: 'cash', label: 'Minimise Premium Freight Spend' },
+  { value: 'retention', label: 'Minimise Recovery Time / TTR' },
 ]
 
 const SIM_RESULTS = {
@@ -86,9 +86,9 @@ function SimResults({ episode, iterations }) {
 
       <SimpleGrid cols={3} spacing="sm">
         {[
-          { label: 'P50 Engagement Rate', value: `${data.p50Engagement}%`, sub: `P5: ${data.p5Engagement}% · P95: ${data.p95Engagement}%`, color: 'teal' },
-          { label: 'P50 AUM Under Advice', value: `$${data.p50AUM}M`, sub: `P5: $${data.p5AUM}M · P95: $${data.p95AUM}M`, color: 'violet' },
-          { label: 'Advisory Starts (projected)', value: `+${data.advisoryStarts}`, sub: `vs do-nothing baseline`, color: 'orange' },
+          { label: 'P50 Service Uplift', value: `+${data.p50Engagement} pts`, sub: `P5: +${data.p5Engagement} · P95: +${data.p95Engagement}`, color: 'teal' },
+          { label: 'P50 Inventory Released', value: `$${data.p50AUM}M`, sub: `P5: $${data.p5AUM}M · P95: $${data.p95AUM}M`, color: 'violet' },
+          { label: 'Stores Recovered (projected)', value: `+${data.advisoryStarts}`, sub: `vs do-nothing baseline`, color: 'orange' },
         ].map(k => (
           <Paper key={k.label} withBorder p="sm" radius="md">
             <Stack gap={2}>
@@ -103,8 +103,8 @@ function SimResults({ episode, iterations }) {
       <Paper withBorder p="sm" radius="md">
         <Stack gap="xs">
           <Group justify="space-between">
-            <Text size="xs" fw={700} tt="uppercase" c="dimmed">Engagement rate by scenario (P50)</Text>
-            <Badge size="xs" color="teal" variant="light">Engagement %</Badge>
+            <Text size="xs" fw={700} tt="uppercase" c="dimmed">Service uplift by scenario (P50)</Text>
+            <Badge size="xs" color="teal" variant="light">Service Δ pts</Badge>
           </Group>
           <BarChart
             h={160}
@@ -122,12 +122,12 @@ function SimResults({ episode, iterations }) {
 
       <Paper withBorder p="sm" radius="md">
         <Stack gap="xs">
-          <Text size="xs" fw={700} tt="uppercase" c="dimmed">Projected AUM under advice by scenario ($M)</Text>
+          <Text size="xs" fw={700} tt="uppercase" c="dimmed">Projected inventory released by scenario ($M)</Text>
           <BarChart
             h={140}
             data={data.aumBars}
             dataKey="scenario"
-            series={[{ name: 'aum', color: 'violet', label: 'AUM ($M)' }]}
+            series={[{ name: 'aum', color: 'violet', label: 'Released ($M)' }]}
             tickLine="none"
             gridAxis="x"
           />
@@ -153,8 +153,8 @@ function SimResults({ episode, iterations }) {
 function RunningState({ onDone }) {
   const [lineIdx, setLineIdx] = useState(0)
   const LINES = [
-    'Loading episode priors from library…',
-    'Sampling behavioral response distributions…',
+    'Loading scenario priors from library…',
+    'Sampling demand & lead-time distributions…',
     'Running 1,000 TwinX simulation iterations…',
     'Computing P5 / P50 / P95 confidence intervals…',
     'Generating scenario comparison…',
@@ -200,33 +200,33 @@ export default function EpisodeSimulator() {
   return (
     <Stack gap="md">
       <Group gap="xs">
-        <Text size="xl" fw={800}>Episode Simulator</Text>
+        <Text size="xl" fw={800}>Scenario Simulator</Text>
         <Badge color="violet" variant="light">TwinX</Badge>
       </Group>
-      <Text size="sm" c="dimmed">Risk-free simulation of investor intervention scenarios — model advisory conversion, AUM uplift, and engagement outcomes before committing to deployment</Text>
+      <Text size="sm" c="dimmed">Risk-free simulation of supply-chain recovery scenarios — model service attainment, inventory release, and recovery outcomes before committing to execution</Text>
 
       <SimpleGrid cols={2} spacing="md">
         {/* Left — config panel */}
         <Paper withBorder p="md" radius="md">
           <Stack gap="md">
             <Stack gap="xs">
-              <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>Select Episode</Text>
-              <Text size="xs" c="dimmed">Choose a historical episode or configure custom</Text>
+              <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>Select Scenario</Text>
+              <Text size="xs" c="dimmed">Choose a historical scenario or configure custom</Text>
               <Select data={EPISODES} value={episode} onChange={v => { setEpisode(v); setPhase('config') }} />
             </Stack>
 
             <Stack gap="xs">
-              <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>Target Investor Cohort</Text>
+              <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>Target Store / SKU Cohort</Text>
               <Select data={COHORTS} value={cohort} onChange={setCohort} />
             </Stack>
 
             <Stack gap="xs">
-              <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>Channel Mix</Text>
+              <Text size="xs" fw={700} tt="uppercase" c="dimmed" style={{ letterSpacing: '0.05em' }}>Recovery Action Mix</Text>
               {[
-                { key: 'email', label: 'Email', color: '#E03131' },
-                { key: 'securesite', label: 'Secure Site', color: '#E03131' },
-                { key: 'apppush', label: 'App Push', color: '#E03131' },
-                { key: 'advisor', label: 'Advisor Consultation', color: '#E03131' },
+                { key: 'email', label: 'MEIO Transfer', color: '#E03131' },
+                { key: 'securesite', label: 'Priority Reroute', color: '#E03131' },
+                { key: 'apppush', label: 'Allocation Resequence', color: '#E03131' },
+                { key: 'advisor', label: 'Selective Expedite', color: '#E03131' },
               ].map(ch => (
                 <Group key={ch.key} gap="sm" align="center">
                   <Text size="xs" w={120} style={{ flexShrink: 0 }}>{ch.label}</Text>
@@ -277,7 +277,7 @@ export default function EpisodeSimulator() {
                 <ThemeIcon size={48} radius="xl" variant="light" color="violet">
                   <IconTarget size={24} stroke={1.5} />
                 </ThemeIcon>
-                <Text fw={600} size="sm">Configure episode and run simulation to see results</Text>
+                <Text fw={600} size="sm">Configure scenario and run simulation to see results</Text>
                 <Text size="xs" c="dimmed">P5 / P50 / P95 confidence intervals · 1,000 iterations · scenario comparison</Text>
               </Stack>
             </Center>
