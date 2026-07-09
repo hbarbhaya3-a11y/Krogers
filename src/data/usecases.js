@@ -1041,8 +1041,35 @@ const UC_STORE_SERVICE_RISK = {
   ],
 }
 
+// ── Inventory Imbalance — Excess Upstream, Shortage Downstream (MEIO, 7 steps) ─
+const II_STEP = (n, id, label, stage, agent, actor = 'agent') => ({
+  id, label, stage, page: 'market-signals', panelType: 'inventory_imbalance', actor, agent,
+  headline: label, panelData: { screen: n },
+})
+const UC_INVENTORY_IMBALANCE = {
+  id: 'uc-inventory-imbalance',
+  title: 'Inventory Imbalance — Excess Upstream, Shortage Downstream',
+  subtitle: 'Reduce excess upstream inventory + protect downstream service via MEIO rebalance',
+  color: 'violet',
+  outcome: 'Service protected + capital released',
+  outcomeDetail: 'Service attainment, days inventory, network inventory, carrying cost, working-capital release',
+  duration: '48–72 hr rebalance window',
+  variants: '25 MEIO levers · 3 policy bundles',
+  agentChain: ['Market Sentinel', 'Context Decoder', 'TwinX Simulation', 'Decision Owner', 'Learning System'],
+  steps: [
+    II_STEP(1, 'ii-1', 'Signal Analysis', 'SENSE', 'Market Sentinel'),
+    II_STEP(2, 'ii-2', 'Objectives & KPIs', 'SENSE', 'Context Decoder'),
+    II_STEP(3, 'ii-3', 'Simulation Levers', 'SIMULATE', 'TwinX Simulation'),
+    II_STEP(4, 'ii-4', 'Simulation Summary', 'SIMULATE', 'TwinX Simulation'),
+    II_STEP(5, 'ii-5', 'Optimization Results', 'SELECT', 'TwinX Simulation'),
+    II_STEP(6, 'ii-6', 'Approval & Execution', 'EXECUTE', 'Decision Owner', 'human'),
+    II_STEP(7, 'ii-7', 'Learn & Save Scenario', 'LEARN', 'Learning System'),
+  ],
+}
+
 export const useCases = [
   UC_STORE_SERVICE_RISK,
+  UC_INVENTORY_IMBALANCE,
   UC_ADVISORY_READINESS,
   UC_IDLE_CASH,
   UC_DIVERSIFICATION,

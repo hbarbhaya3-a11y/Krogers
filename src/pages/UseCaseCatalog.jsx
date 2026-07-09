@@ -64,7 +64,7 @@ const LIVE_SIGNALS = [
   },
   {
     ucId: 'uc-inventory-imbalance',
-    linkedUseCaseId: 'uc-store-service-risk',
+    linkedUseCaseId: 'uc-inventory-imbalance',
     severity: 'MEDIUM',
     severityColor: 'blue',
     stage: 'SENSE',
