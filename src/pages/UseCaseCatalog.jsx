@@ -50,6 +50,8 @@ const LIVE_SIGNALS = [
     metricStripLabel: 'Stores at risk',
     metricSub: 'priority store/SKU',
     tags: ['STORE SERVICE RISK', 'LOW INVENTORY COVER', 'DELAYED REPLENISHMENT', 'STOCKOUT PROBABILITY', 'SERVICE SENTINEL'],
+    precedents: 5,
+    precedentNote: null,
     confidence: 87,
     window: '24–72 hr service window',
     trendLabel: 'STORE SERVICE RISK TREND — At-Risk Stores / SKU-Locations',
@@ -77,6 +79,8 @@ const LIVE_SIGNALS = [
     metricStripLabel: 'SKU families impacted',
     metricSub: 'upstream excess / downstream risk',
     tags: ['BUFFER DUPLICATION', 'SAFETY STOCK IMBALANCE', 'ON-HAND SHORTAGE', 'UPSTREAM EXCESS', 'MEIO SENTINEL'],
+    precedents: 4,
+    precedentNote: null,
     confidence: 89,
     window: '48–72 hr rebalance window',
     trendLabel: 'INVENTORY IMBALANCE TREND — Upstream Excess vs Downstream Risk',
@@ -106,6 +110,8 @@ const LIVE_SIGNALS = [
     metricStripLabel: 'Delayed POs / ASNs',
     metricSub: 'high-volume DC',
     tags: ['SUPPLIER COMMITMENT VARIANCE', 'ASN REVISION EVENT', 'INBOUND ETA BREACH', 'HIGH-VOLUME DC', 'NETWORK SENTINEL'],
+    precedents: 3,
+    precedentNote: null,
     confidence: 91,
     window: '24–48 hr recovery window',
     trendLabel: 'INBOUND DELAY EXPOSURE TREND — Supplier → DC Flow',
@@ -133,6 +139,8 @@ const LIVE_SIGNALS = [
     metricStripLabel: 'Capacity variance',
     metricSub: 'below required flow',
     tags: ['DC THROUGHPUT CONSTRAINT', 'DOCK OCCUPANCY RISING', 'BACKLOG SPIKE', 'CAPACITY DERATE', 'FLOW SENTINEL'],
+    precedents: 4,
+    precedentNote: null,
     confidence: 88,
     window: '12–24 hr response window',
     trendLabel: 'DC THROUGHPUT STRESS TREND — Planned vs Available Capacity',
@@ -160,6 +168,8 @@ const LIVE_SIGNALS = [
     metricStripLabel: 'At-risk loads',
     metricSub: 'premium freight exposure',
     tags: ['ETA BREACH RISK', 'TIME-TO-NEED COMPRESSION', 'PREMIUM FREIGHT RISK', 'CARRIER ACCEPTANCE RISK', 'COST SENTINEL'],
+    precedents: 2,
+    precedentNote: 'Limited history',
     confidence: 84,
     window: '24 hr cost-control window',
     trendLabel: 'PREMIUM FREIGHT RISK TREND — At-Risk Loads',
@@ -345,6 +355,8 @@ export default function UseCaseCatalog({ onRunScenario }) {
                           <IconUsers size={11} />
                           <Text size="10px">{sig.metricValue} {sig.metricUnit}</Text>
                         </Group>
+                        <Text size="10px" c="dimmed">·</Text>
+                        <Text size="10px">{sig.precedents} precedents</Text>
                       </Group>
                       <Group justify="space-between" align="center">
                         <Text size="9px" c="dimmed">{sig.sourceChip.split('·')[0].trim()}</Text>
@@ -388,6 +400,15 @@ export default function UseCaseCatalog({ onRunScenario }) {
                   <Text fw={800} size="xl" c={selectedSignal.severityColor}>{selectedSignal.metricValue}</Text>
                   <Text size="10px" c="dimmed">{selectedSignal.metricStripLabel}</Text>
                   <Text size="10px" c="dimmed">{selectedSignal.metricSub}</Text>
+                </Box>
+                <Box>
+                  <Text fw={800} size="xl" c={selectedSignal.precedentNote ? 'orange' : 'dark'}>
+                    {selectedSignal.precedents}
+                  </Text>
+                  <Text size="10px" c="dimmed">Historical precedents</Text>
+                  {selectedSignal.precedentNote && (
+                    <Text size="10px" c="orange">{selectedSignal.precedentNote}</Text>
+                  )}
                 </Box>
               </Group>
 
