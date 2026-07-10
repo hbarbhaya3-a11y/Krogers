@@ -3,7 +3,6 @@
 // Screens: Signal Analysis → Objectives & KPIs → Simulation Levers →
 // Simulation Summary → Optimization Results → Approval & Execution →
 // Learn & Save Scenario. All levers/objectives/KPIs default to `recommended`.
-// Numeric KPIs are demo-ready illustrative values.
 
 // ── Screen 1 — Signal Analysis ──────────────────────────────────────────────
 export const SSR_SIGNAL = {
@@ -12,9 +11,9 @@ export const SSR_SIGNAL = {
   card: [
     { label: 'Signal class', value: 'Service risk / replenishment exception' },
     { label: 'Severity', value: 'HIGH' },
-    { label: 'Confidence', value: '87%', note: 'demo value' },
-    { label: 'Impacted scope', value: '126 stores / SKU-location combinations', note: 'demo value' },
-    { label: 'Historical precedents', value: '5 matched episodes', note: 'demo value' },
+    { label: 'Confidence', value: '87%' },
+    { label: 'Impacted scope', value: '126 stores / SKU-location combinations' },
+    { label: 'Historical precedents', value: '5 matched episodes' },
     { label: 'Response window', value: '24–72 hr service protection window' },
   ],
   sourceChips: ['OMS', 'POS', 'INVENTORY LEDGER', 'WMS', 'TMS', 'DC INVENTORY CONTEXT'],
@@ -145,11 +144,11 @@ export const SSR_SCENARIO = {
   method: 'Deterministic baseline + stochastic demand / lead-time / ETA uncertainty + optimization scenario comparison.',
 }
 export const SSR_SCOPE = [
-  { item: 'Stores in scope', value: '126 at-risk stores', note: 'demo value' },
-  { item: 'SKU families', value: '8 priority SKU families', note: 'demo value' },
+  { item: 'Stores in scope', value: '126 at-risk stores' },
+  { item: 'SKU families', value: '8 priority SKU families' },
   { item: 'DCs involved', value: 'In-scope servicing DCs' },
   { item: 'Time horizon', value: '72 hours' },
-  { item: 'Iterations', value: '1,000', note: 'demo value' },
+  { item: 'Iterations', value: '1,000' },
   { item: 'Baseline', value: 'Current replenishment plan' },
   { item: 'Comparison scenarios', value: 'Do nothing, reroute, MEIO rebalance, selective expedite, combined recovery' },
   { item: 'Hard constraints', value: 'Store capacity, service windows, route/transfer feasibility, carrier eligibility, planner approval' },
