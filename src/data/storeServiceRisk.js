@@ -95,7 +95,6 @@ export const SSR_LEVER_GROUPS = [
       { id: 'safetyStock', label: 'Safety stock adjustment', control: 'select', options: ['Current policy', '+5% high-risk / -2% overstock', '+10% all nodes'], recommended: '+5% high-risk / -2% overstock', why: 'Protects service without inflating network-wide inventory' },
       { id: 'reorderPoint', label: 'Reorder point adjustment', control: 'select', options: ['Current reorder point', 'Raise for priority SKU/store pairs'], recommended: 'Raise for priority SKU/store pairs', why: 'Triggers earlier replenishment for at-risk combinations' },
       { id: 'transferViability', label: 'Transfer viability threshold', control: 'select', options: ['70% feasibility', '80% feasibility', '90% feasibility'], recommended: '80% feasibility', why: 'Avoids recommending transfers that cannot arrive in time' },
-      { id: 'storeCapacity', label: 'Store capacity constraint', control: 'select', options: ['Editable', 'Locked (hard constraint)'], recommended: 'Locked (hard constraint)', why: 'Prevents infeasible downstream push' },
     ],
   },
   {

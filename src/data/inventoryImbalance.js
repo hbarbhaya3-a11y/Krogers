@@ -109,8 +109,6 @@ export const II_LEVER_GROUPS = [
       { id: 'reorderTuning', label: 'Reorder point tuning', control: 'select', options: ['Current policy', '+5–7% priority SKU-locations'], recommended: '+5–7% priority SKU-locations' },
       { id: 'reviewCadence', label: 'Review cadence', control: 'select', options: ['Current cadence', 'Higher-frequency for volatile SKUs'], recommended: 'Higher-frequency for volatile SKUs' },
       { id: 'replenFreq', label: 'Replenishment frequency', control: 'select', options: ['Current frequency', 'Increase for priority SKUs'], recommended: 'Increase for priority SKUs' },
-      { id: 'moq', label: 'MOQ constraint', control: 'select', options: ['Editable', 'Locked (hard constraint)'], recommended: 'Locked (hard constraint)' },
-      { id: 'storeSpace', label: 'Store space constraint', control: 'select', options: ['Editable', 'Locked (hard constraint)'], recommended: 'Locked (hard constraint)' },
     ],
   },
   {
