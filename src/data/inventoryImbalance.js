@@ -87,9 +87,7 @@ export const II_LEVER_GROUPS = [
     group: 'A', title: 'Safety-stock & target-stock levers', color: 'orange',
     levers: [
       { id: 'ssRightSize', label: 'Safety-stock right-sizing', control: 'select', options: ['Current policy', 'Reduce upstream/DC by 8–12%', 'Reduce upstream/DC by 15%'], recommended: 'Reduce upstream/DC by 8–12%' },
-      { id: 'storeSSUplift', label: 'Store safety-stock uplift', control: 'select', options: ['Current policy', '+3–5% priority store/SKU', '+8% priority store/SKU'], recommended: '+3–5% priority store/SKU' },
       { id: 'targetStock', label: 'Target stock by echelon', control: 'select', options: ['Current target stock', 'Shift closer to demand nodes'], recommended: 'Shift closer to demand nodes' },
-      { id: 'dosBand', label: 'Days-of-supply band', control: 'select', options: ['Current DOS', 'Min/max DOS by SKU velocity'], recommended: 'Min/max DOS by SKU velocity' },
       { id: 'serviceByCat', label: 'Service target by category', control: 'select', options: ['Current target', '98% priority / 96% standard'], recommended: '98% priority / 96% standard' },
     ],
   },
@@ -104,31 +102,12 @@ export const II_LEVER_GROUPS = [
     ],
   },
   {
-    group: 'C', title: 'Reorder & replenishment policy levers', color: 'teal',
-    levers: [
-      { id: 'reorderTuning', label: 'Reorder point tuning', control: 'select', options: ['Current policy', '+5–7% priority SKU-locations'], recommended: '+5–7% priority SKU-locations' },
-      { id: 'reviewCadence', label: 'Review cadence', control: 'select', options: ['Current cadence', 'Higher-frequency for volatile SKUs'], recommended: 'Higher-frequency for volatile SKUs' },
-      { id: 'replenFreq', label: 'Replenishment frequency', control: 'select', options: ['Current frequency', 'Increase for priority SKUs'], recommended: 'Increase for priority SKUs' },
-    ],
-  },
-  {
-    group: 'D', title: 'Uncertainty & risk levers', color: 'blue',
+    group: 'C', title: 'Uncertainty & risk levers', color: 'blue',
     levers: [
       { id: 'demandStress', label: 'Demand variability stress', control: 'select', options: ['+0%', '+10%', '+20%', '+30%'], recommended: '+20%' },
       { id: 'leadTimeStress', label: 'Lead-time variability stress', control: 'select', options: ['+0%', '+20%', '+30%'], recommended: '+20%' },
       { id: 'stockoutTrigger', label: 'Stockout risk threshold', control: 'select', options: ['>25% risk', '>20% risk', '>15% risk'], recommended: '>15% risk' },
-      { id: 'slowMover', label: 'Slow-mover threshold', control: 'select', options: ['Current velocity rule', 'Flag SKUs below movement threshold'], recommended: 'Flag SKUs below movement threshold' },
       { id: 'transferViability', label: 'Transfer viability threshold', control: 'select', options: ['70% feasibility', '80% feasibility', '90% feasibility'], recommended: '80% feasibility' },
-    ],
-  },
-  {
-    group: 'E', title: 'Financial guardrail levers', color: 'green',
-    levers: [
-      { id: 'carryingCost', label: 'Carrying-cost assumption', control: 'select', options: ['Finance-approved baseline', 'Custom assumption'], recommended: 'Finance-approved baseline' },
-      { id: 'wcTarget', label: 'Working-capital release target', control: 'select', options: ['No target', 'Exploratory target ($100M scenario)'], recommended: 'Exploratory target ($100M scenario)' },
-      { id: 'shortageProxy', label: 'Shortage proxy cost', control: 'select', options: ['Current proxy', 'Increase for priority SKUs'], recommended: 'Increase for priority SKUs' },
-      { id: 'transferCost', label: 'Transfer cost', control: 'select', options: ['Current transfer cost', 'Use actual route/node transfer cost'], recommended: 'Use actual route/node transfer cost' },
-      { id: 'maxReductionCap', label: 'Max inventory reduction cap', control: 'select', options: ['None', 'Cap at service-safe level'], recommended: 'Cap at service-safe level' },
     ],
   },
 ]
