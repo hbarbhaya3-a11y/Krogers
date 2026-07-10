@@ -97,15 +97,6 @@ export const SSR_LEVER_GROUPS = [
     ],
   },
   {
-    group: 'C', title: 'Transportation / network levers', color: 'teal',
-    levers: [
-      { id: 'priorityReroute', label: 'Priority reroute', control: 'switch', recommended: true, onLabel: 'On', why: 'Tests rerouting of critical replenishment orders' },
-      { id: 'alternateLane', label: 'Alternate lane eligibility', control: 'select', options: ['Existing routes only', 'Existing + pre-approved alternate lanes'], recommended: 'Existing + pre-approved alternate lanes', why: 'Expands feasible recovery routes without adding new corridors' },
-      { id: 'carrierSwap', label: 'Carrier swap', control: 'switch', recommended: true, onLabel: 'On for at-risk loads', why: 'Uses carrier on-time probability and tender acceptance' },
-      { id: 'premiumCap', label: 'Premium freight cap', control: 'select', options: ['No cap', 'Cap to top 10–15% critical orders', 'Cap to top 5% critical'], recommended: 'Cap to top 10–15% critical orders', why: 'Prevents broad expedite spend' },
-    ],
-  },
-  {
     group: 'D', title: 'Cost / resilience levers', color: 'blue',
     levers: [
       { id: 'shortageProxy', label: 'Shortage proxy cost', control: 'select', options: ['Current proxy', 'Increase for priority SKUs'], recommended: 'Increase for priority SKUs', why: 'Makes stockout avoidance more important in optimization' },
