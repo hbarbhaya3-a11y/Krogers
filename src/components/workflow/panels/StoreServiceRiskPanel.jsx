@@ -12,6 +12,7 @@ import {
 } from '@tabler/icons-react'
 import { useUseCase } from '../../../contexts/UseCaseContext'
 import * as D from '../../../data/storeServiceRisk'
+import { NetworkMap, BeforeAfterFlow, EfficientFrontier, WorkflowActions, ModelUpdateGrid } from '../../viz/ScmViz'
 
 // ── Loading transition — supply-chain context per screen ────────────────────
 function useLoadingPhase(lines) {
@@ -125,6 +126,20 @@ function StrategyModal({ reco, onClose }) {
               </Table>
             </Box>
             <Box>
+              <Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>Network flows — before vs after</Text>
+              <BeforeAfterFlow nodes={D.SSR_NETWORK.nodes} before={D.SSR_NETWORK.before} after={D.SSR_NETWORK.afterById[reco.id] || D.SSR_NETWORK.afterById.combined} />
+            </Box>
+            <Box>
+              <Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>Efficient frontier — service vs cost vs recovery time</Text>
+              <EfficientFrontier {...D.SSR_FRONTIER} />
+            </Box>
+            {D.SSR_WORKFLOW_ACTIONS[reco.id] && (
+              <Box>
+                <Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>Exact actions by workflow (WMS · OMS · TMS · APS)</Text>
+                <WorkflowActions actions={D.SSR_WORKFLOW_ACTIONS[reco.id]} />
+              </Box>
+            )}
+            <Box>
               <Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>Guardrails</Text>
               <Group gap={6} wrap="wrap">{p.guardrails.map(g => <Badge key={g} size="xs" variant="light" color={reco.tone}>{g}</Badge>)}</Group>
             </Box>
@@ -153,6 +168,27 @@ function Screen1({ onContinue }) {
       <Alert color="orange" variant="light" icon={<IconAlertTriangle size={16} />} title={s.sentinel}>
         <Text size="sm">{s.bannerText}</Text>
       </Alert>
+
+      {/* Disruption source */}
+      <Paper withBorder p="sm" radius="md" style={{ borderLeft: '3px solid var(--mantine-color-red-5)' }}>
+        <Group gap="xs" mb={2}><Badge size="xs" color="red" variant="filled">DISRUPTION SOURCE</Badge><Text size="10px" c="dimmed">Detected {D.SSR_DISRUPTION.detected}</Text></Group>
+        <Text size="xs" fw={600}>{D.SSR_DISRUPTION.source}</Text>
+        <Text size="10px" c="dimmed" mt={2}>Cascade: {D.SSR_DISRUPTION.cascade}</Text>
+      </Paper>
+
+      {/* Impact tiles */}
+      <SimpleGrid cols={5} spacing="sm">
+        {D.SSR_IMPACT.map(t => (
+          <Paper key={t.label} withBorder p="sm" radius="md"><Text fw={800} size="lg" c={t.color}>{t.value}</Text><Text size="10px" c="dimmed" lineClamp={2}>{t.label}</Text></Paper>
+        ))}
+      </SimpleGrid>
+
+      {/* Network map */}
+      <Paper withBorder p="md" radius="md">
+        <SectionHead icon={IconRoute} title="Impacted network — supplier → DC → store" color="red" />
+        <Box mt="xs"><NetworkMap nodes={D.SSR_NETWORK.nodes} lanes={D.SSR_NETWORK.before} /></Box>
+      </Paper>
+
       <SimpleGrid cols={2} spacing="md">
         <Paper withBorder p="md" radius="md" style={{ borderLeft: '3px solid var(--mantine-color-orange-5)' }}>
           <SectionHead icon={IconRadar} title="Signal summary" />
@@ -446,6 +482,30 @@ function Screen7({ ws, setWs, onExit }) {
           ))}</Table.Tbody>
         </Table>
       </Paper>
+      <SimpleGrid cols={4} spacing="sm">
+        {D.SSR_LEARN.accuracy.map(a => (
+          <Paper key={a.label} withBorder p="sm" radius="md"><Text fw={800} size="lg" c="grape">{a.value}</Text><Text size="10px" c="dimmed" lineClamp={2}>{a.label}</Text></Paper>
+        ))}
+      </SimpleGrid>
+      <Paper withBorder p="md" radius="md">
+        <Text fw={700} size="xs" mb="xs">Model recalibration</Text>
+        <ModelUpdateGrid items={D.SSR_LEARN.recalibration} />
+      </Paper>
+      <SimpleGrid cols={2} spacing="md">
+        <Paper withBorder p="md" radius="md">
+          <Text fw={700} size="xs" mb="xs">Discovered risk patterns</Text>
+          <List size="xs" spacing={2}>{D.SSR_LEARN.patterns.map((x, i) => <List.Item key={i}>{x}</List.Item>)}</List>
+        </Paper>
+        <Paper withBorder p="md" radius="md" style={{ borderLeft: '3px solid var(--mantine-color-grape-5)' }}>
+          <Text fw={700} size="xs" mb="xs">Digital twin evolution</Text>
+          <Group gap="xl">
+            <Box><Text size="10px" c="dimmed">Prior confidence</Text><Text size="lg" fw={800} c="dimmed">{D.SSR_LEARN.twin.before}</Text></Box>
+            <Text c="dimmed">→</Text>
+            <Box><Text size="10px" c="dimmed">Posterior</Text><Text size="lg" fw={800} c="grape">{D.SSR_LEARN.twin.after}</Text></Box>
+          </Group>
+          <Text size="10px" c="dimmed" mt="xs">{D.SSR_LEARN.twin.nodesEnriched} store twins · {D.SSR_LEARN.twin.lanesEnriched} lane twins enriched — {D.SSR_LEARN.twin.note}</Text>
+        </Paper>
+      </SimpleGrid>
       <Paper withBorder p="md" radius="md">
         <Text fw={700} size="xs" mb="xs">TwinX learned</Text>
         <List size="xs" type="ordered" spacing={2}>{D.SSR_INSIGHTS.map((x, i) => <List.Item key={i}>{x}</List.Item>)}</List>

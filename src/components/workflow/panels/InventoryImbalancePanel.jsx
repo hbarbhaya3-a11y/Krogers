@@ -12,6 +12,7 @@ import {
 } from '@tabler/icons-react'
 import { useUseCase } from '../../../contexts/UseCaseContext'
 import * as D from '../../../data/inventoryImbalance'
+import { InventoryHeatmap, InventoryLocation, EfficientFrontier, StrategyCompare, ModelUpdateGrid } from '../../viz/ScmViz'
 
 // ── Loading transition ──────────────────────────────────────────────────────
 function useLoadingPhase(lines) {
@@ -131,6 +132,33 @@ function StrategyModal({ reco, onClose }) {
                 </Table>
               </Box>
             )}
+            {D.II_OPTIMIZATION[reco.id] && (
+              <Box>
+                <Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>Inventory policy optimization</Text>
+                <Table fz="xs" withTableBorder withColumnBorders>
+                  <Table.Tbody>
+                    {[['Safety stock', 'safetyStock'], ['Reorder point', 'reorderPoint'], ['Transfer', 'transfer'], ['Placement', 'placement']].map(([lbl, k]) => (
+                      <Table.Tr key={k}><Table.Td c="dimmed" w="30%" fw={600}>{lbl}</Table.Td><Table.Td>{D.II_OPTIMIZATION[reco.id][k]}</Table.Td></Table.Tr>
+                    ))}
+                  </Table.Tbody>
+                </Table>
+              </Box>
+            )}
+            <Box>
+              <Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>Inventory movement — before vs after (units on-hand)</Text>
+              <SimpleGrid cols={2} spacing="md">
+                <Paper withBorder p="sm" radius="md"><Badge size="xs" color="orange" variant="light" mb="xs">Before</Badge><InventoryLocation data={D.II_INV_MOVE.before} /></Paper>
+                <Paper withBorder p="sm" radius="md" style={{ borderLeft: '3px solid var(--mantine-color-green-5)' }}><Badge size="xs" color="green" variant="light" mb="xs">After</Badge><InventoryLocation data={D.II_INV_MOVE.after} /></Paper>
+              </SimpleGrid>
+            </Box>
+            <Box>
+              <Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>Efficient frontier — service vs inventory vs working capital</Text>
+              <EfficientFrontier {...D.II_FRONTIER} />
+            </Box>
+            <Box>
+              <Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>Strategy comparison</Text>
+              <StrategyCompare strategies={D.II_STRATEGIES} />
+            </Box>
             <Box><Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>Guardrails</Text><Group gap={6} wrap="wrap">{p.guardrails.map(g => <Badge key={g} size="xs" variant="light" color={reco.tone}>{g}</Badge>)}</Group></Box>
             <Alert color={reco.tone} variant="light" p="xs"><Text size="xs"><b>Expected impact:</b> {p.expected}</Text></Alert>
           </Stack>
@@ -146,6 +174,26 @@ function Screen1({ onContinue }) {
   return (
     <Stack gap="md">
       <Alert color="violet" variant="light" icon={<IconAlertTriangle size={16} />} title={s.sentinel}><Text size="sm">{s.bannerText}</Text></Alert>
+
+      {/* Impact tiles */}
+      <SimpleGrid cols={4} spacing="sm">
+        {D.II_IMPACT.map(t => (
+          <Paper key={t.label} withBorder p="sm" radius="md"><Text fw={800} size="lg" c={t.color}>{t.value}</Text><Text size="10px" c="dimmed" lineClamp={2}>{t.label}</Text></Paper>
+        ))}
+      </SimpleGrid>
+
+      {/* Imbalance heatmap + inventory location */}
+      <SimpleGrid cols={2} spacing="md">
+        <Paper withBorder p="md" radius="md">
+          <SectionHead icon={IconChartBar} title="Inventory imbalance heatmap" color="orange" />
+          <Box mt="xs"><InventoryHeatmap {...D.II_HEATMAP} /></Box>
+        </Paper>
+        <Paper withBorder p="md" radius="md">
+          <SectionHead icon={IconChartBar} title="Inventory location — supplier / DC / store" color="violet" />
+          <Box mt="xs"><InventoryLocation data={D.II_INV_LOCATION} /></Box>
+        </Paper>
+      </SimpleGrid>
+
       <SimpleGrid cols={2} spacing="md">
         <Paper withBorder p="md" radius="md" style={{ borderLeft: '3px solid var(--mantine-color-violet-5)' }}>
           <SectionHead icon={IconRadar} title="Signal summary" />
@@ -369,6 +417,10 @@ function Screen7({ ws, setWs, onExit }) {
           <Table.Thead><Table.Tr><Table.Th>KPI</Table.Th><Table.Th>Predicted</Table.Th><Table.Th>Actual</Table.Th><Table.Th>Learning outcome</Table.Th></Table.Tr></Table.Thead>
           <Table.Tbody>{D.II_OUTCOMES.map(o => <Table.Tr key={o.metric}><Table.Td fw={600}>{o.metric}</Table.Td><Table.Td c="dimmed">{o.pred}</Table.Td><Table.Td fw={700}>{o.actual}</Table.Td><Table.Td c="dimmed">{o.learn}</Table.Td></Table.Tr>)}</Table.Tbody>
         </Table>
+      </Paper>
+      <Paper withBorder p="md" radius="md">
+        <Text fw={700} size="xs" mb="xs">Model & policy recalibration</Text>
+        <ModelUpdateGrid items={D.II_LEARN.updates} />
       </Paper>
       <Paper withBorder p="md" radius="md"><Text fw={700} size="xs" mb="xs">TwinX learned</Text><List size="xs" type="ordered" spacing={2}>{D.II_INSIGHTS.map((x, i) => <List.Item key={i}>{x}</List.Item>)}</List></Paper>
       <Paper withBorder p="md" radius="md" style={{ background: 'var(--mantine-color-default-hover)' }}>

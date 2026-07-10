@@ -311,6 +311,91 @@ export const II_RANKING = [
 ]
 
 // ── Screen 6 — Approval & Execution ─────────────────────────────────────────
+// ── Screen 1 — MEIO imbalance visuals ───────────────────────────────────────
+export const II_IMPACT = [
+  { label: 'Trapped capital', value: '$1.8M', color: 'red' },
+  { label: 'Excess inventory (upstream)', value: '+14%', color: 'orange' },
+  { label: 'Service risk (stockout prob.)', value: '18.6%', color: 'orange' },
+  { label: 'Stockout exposure', value: '$2.1M', color: 'violet' },
+]
+// Imbalance heatmap — echelon rows × SKU-family cols; % vs policy (+excess / −shortage)
+export const II_HEATMAP = {
+  rows: ['Supplier', 'DC-01', 'DC-02', 'Store Cluster A', 'Store Cluster B'],
+  cols: ['Dairy', 'Frozen', 'Bev', 'Dry', 'Snacks', 'Produce', 'Bakery', 'Meat'],
+  cells: [
+    [12, 9, 14, 6, 4, 2, 3, 5],
+    [18, 22, 15, 11, 8, 3, 6, 9],
+    [9, 6, 12, 7, 5, 2, 4, 6],
+    [-14, -9, -18, -6, -3, -1, -2, -4],
+    [-11, -7, -15, -8, -4, -2, -3, -6],
+  ],
+}
+// Inventory location by echelon (on-hand vs policy target, units)
+export const II_INV_LOCATION = [
+  { label: 'Supplier A', type: 'supplier', onHand: 9200, policy: 8000 },
+  { label: 'DC-01', type: 'dc', onHand: 14800, policy: 11000 },
+  { label: 'DC-02', type: 'dc', onHand: 10600, policy: 9500 },
+  { label: 'Store Cluster A', type: 'store', onHand: 2100, policy: 3400 },
+  { label: 'Store Cluster B', type: 'store', onHand: 1800, policy: 3100 },
+]
+// Efficient frontier — x: total network inventory ($B), y: service %, z: working-capital release ($M)
+export const II_FRONTIER = {
+  xLabel: 'Total network inventory ($B)', yLabel: 'Service attainment (%)', zLabel: 'Working-capital release ($M)',
+  points: [
+    { x: 1.42, y: 94.1, z: 0, label: 'Current policy', tone: 'gray' },
+    { x: 1.35, y: 96.8, z: 70, label: 'Safety Stock', tone: 'orange' },
+    { x: 1.31, y: 97.2, z: 110, label: 'Rebalance', tone: 'violet' },
+    { x: 1.28, y: 95.6, z: 160, label: 'Capital', tone: 'blue' },
+    { x: 1.28, y: 98.0, z: 140, label: 'Balanced', tone: 'green', recommended: true },
+  ],
+}
+// Four comparable strategies (service / inventory / capital / feasibility / effort / confidence)
+export const II_STRATEGIES = [
+  { name: 'Safety Stock Strategy', tone: 'orange', recommended: false, metrics: [
+    { label: 'Service', value: '96.8%', pct: 80 }, { label: 'Inventory ↓', value: '$70M', pct: 44 }, { label: 'Capital release', value: '$70M', pct: 44 },
+    { label: 'Feasibility', value: 'High', pct: 85 }, { label: 'Effort', value: 'Low', pct: 30 }, { label: 'Confidence', value: '88%', pct: 88 },
+  ] },
+  { name: 'Rebalance Strategy', tone: 'violet', recommended: false, metrics: [
+    { label: 'Service', value: '97.2%', pct: 86 }, { label: 'Inventory ↓', value: '$110M', pct: 69 }, { label: 'Capital release', value: '$110M', pct: 69 },
+    { label: 'Feasibility', value: 'High', pct: 82 }, { label: 'Effort', value: 'Medium', pct: 55 }, { label: 'Confidence', value: '85%', pct: 85 },
+  ] },
+  { name: 'Capital Strategy', tone: 'blue', recommended: false, metrics: [
+    { label: 'Service', value: '95.6%', pct: 66 }, { label: 'Inventory ↓', value: '$160M', pct: 100 }, { label: 'Capital release', value: '$160M', pct: 100 },
+    { label: 'Feasibility', value: 'Medium', pct: 62 }, { label: 'Effort', value: 'Medium', pct: 58 }, { label: 'Confidence', value: '82%', pct: 82 },
+  ] },
+  { name: 'Balanced Strategy', tone: 'green', recommended: true, metrics: [
+    { label: 'Service', value: '98.0%', pct: 96 }, { label: 'Inventory ↓', value: '$140M', pct: 88 }, { label: 'Capital release', value: '$140M', pct: 88 },
+    { label: 'Feasibility', value: 'Medium-high', pct: 74 }, { label: 'Effort', value: 'Medium-high', pct: 70 }, { label: 'Confidence', value: '90%', pct: 90 },
+  ] },
+]
+// Inventory movement before vs after (Balanced) — units on-hand by echelon
+export const II_INV_MOVE = {
+  before: II_INV_LOCATION,
+  after: [
+    { label: 'Supplier A', type: 'supplier', onHand: 8100, policy: 8000 },
+    { label: 'DC-01', type: 'dc', onHand: 11200, policy: 11000 },
+    { label: 'DC-02', type: 'dc', onHand: 9700, policy: 9500 },
+    { label: 'Store Cluster A', type: 'store', onHand: 3300, policy: 3400 },
+    { label: 'Store Cluster B', type: 'store', onHand: 3050, policy: 3100 },
+  ],
+}
+// Placement optimization detail per recommendation id
+export const II_OPTIMIZATION = {
+  'ss-rightsize': { safetyStock: 'Upstream/DC −8–12%; store +3–5%', reorderPoint: 'Unchanged', transfer: 'None', placement: 'Buffer held; store uplift only' },
+  dedup: { safetyStock: 'De-duplicate cross-echelon buffers', reorderPoint: 'Unchanged', transfer: 'DC-to-store where viability > 80%', placement: 'Shift freed buffer downstream' },
+  balanced: { safetyStock: 'Right-size upstream −8–12%; store +3–5%', reorderPoint: '+5–7% priority SKU-locations', transfer: 'DC-to-store + lateral (viability > 80%)', placement: 'Move 10–15% buffer downstream for high-risk SKUs' },
+}
+// Screen 7 — Learn: model & policy updates
+export const II_LEARN = {
+  updates: [
+    { label: 'Demand model', before: 'CV 0.24', after: 'CV 0.29', delta: '+variance', note: 'Priority SKUs more volatile than forecast' },
+    { label: 'Lead-time model', before: 'σ 8 hr', after: 'σ 11 hr', delta: '+3 hr', note: 'Widened lead-time variance band' },
+    { label: 'Safety-stock policy', before: 'Static', after: 'Velocity-tiered', delta: 'updated', note: 'DOS band by SKU velocity class' },
+    { label: 'Transfer rules', before: '≥ 70% viability', after: '≥ 80% viability', delta: 'tightened', note: 'Filter low-feasibility transfers' },
+    { label: 'Optimization parameters', before: 'Service weight 0.5', after: '0.6', delta: '+service', note: 'Higher service weight vs capital' },
+  ],
+}
+
 export const II_APPROVAL = {
   selected: 'Balanced MEIO Policy Bundle',
   action: 'Right-size safety stock + de-duplicate cross-echelon buffers + rebalance inventory to high-risk downstream nodes + adjust reorder points for priority SKU-locations.',

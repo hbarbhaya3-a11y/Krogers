@@ -311,6 +311,110 @@ export const SSR_RANKING = [
   { rank: 3, reco: 'Priority Reroute', service: 'Medium-high', cost: 'Medium-high', speed: 'High', feasibility: 'High', select: 'Alternative' },
 ]
 
+// ── Screen 1 — Network Resilience visuals ───────────────────────────────────
+export const SSR_DISRUPTION = {
+  source: 'Supplier commitment shortfall + inbound ETA breach into high-volume DC-01',
+  detected: '7/07/2026 · 06:12',
+  cascade: 'Supplier → DC-01 inbound delay → dependent store replenishment lanes → downstream service risk',
+}
+export const SSR_IMPACT = [
+  { label: 'Stores impacted', value: '126', color: 'orange' },
+  { label: 'Revenue at risk', value: '$4.8M', color: 'red' },
+  { label: 'Service degradation (72 hr)', value: '−6.4 pts', color: 'orange' },
+  { label: 'Inventory at risk', value: '$2.1M', color: 'violet' },
+  { label: 'Affected lanes', value: '9', color: 'blue' },
+]
+export const SSR_NETWORK = {
+  nodes: [
+    { id: 'S1', type: 'supplier', x: 4, y: 20, label: 'Supplier A' },
+    { id: 'S2', type: 'supplier', x: 4, y: 55, label: 'Supplier B', impacted: true },
+    { id: 'S3', type: 'supplier', x: 4, y: 88, label: 'Supplier C' },
+    { id: 'DC1', type: 'dc', x: 48, y: 30, label: 'DC-01', impacted: true },
+    { id: 'DC2', type: 'dc', x: 48, y: 72, label: 'DC-02' },
+    { id: 'ST1', type: 'store', x: 92, y: 12, label: 'Cluster A' },
+    { id: 'ST2', type: 'store', x: 92, y: 38, label: 'Cluster B', impacted: true },
+    { id: 'ST3', type: 'store', x: 92, y: 64, label: 'Cluster C', impacted: true },
+    { id: 'ST4', type: 'store', x: 92, y: 90, label: 'Cluster D' },
+  ],
+  before: [
+    { from: 'S1', to: 'DC1', status: 'ok' }, { from: 'S2', to: 'DC1', status: 'at-risk' },
+    { from: 'S3', to: 'DC2', status: 'ok' },
+    { from: 'DC1', to: 'ST1', status: 'ok' }, { from: 'DC1', to: 'ST2', status: 'at-risk' },
+    { from: 'DC1', to: 'ST3', status: 'at-risk' }, { from: 'DC2', to: 'ST3', status: 'ok' },
+    { from: 'DC2', to: 'ST4', status: 'ok' },
+  ],
+  afterById: {
+    combined: [
+      { from: 'S1', to: 'DC1', status: 'rerouted' }, { from: 'S2', to: 'DC1', status: 'ok' },
+      { from: 'S3', to: 'DC2', status: 'ok' },
+      { from: 'DC1', to: 'ST1', status: 'ok' }, { from: 'DC2', to: 'ST2', status: 'rerouted' },
+      { from: 'DC2', to: 'ST3', status: 'rerouted' }, { from: 'DC1', to: 'ST3', status: 'ok' },
+      { from: 'DC2', to: 'ST4', status: 'ok' },
+    ],
+    meio: [
+      { from: 'S1', to: 'DC1', status: 'ok' }, { from: 'S2', to: 'DC1', status: 'ok' },
+      { from: 'S3', to: 'DC2', status: 'ok' },
+      { from: 'DC1', to: 'ST1', status: 'ok' }, { from: 'DC2', to: 'ST2', status: 'rerouted' },
+      { from: 'DC2', to: 'ST3', status: 'rerouted' }, { from: 'DC2', to: 'ST4', status: 'ok' },
+    ],
+    reroute: [
+      { from: 'S1', to: 'DC1', status: 'rerouted' }, { from: 'S2', to: 'DC1', status: 'ok' },
+      { from: 'S3', to: 'DC2', status: 'ok' },
+      { from: 'DC1', to: 'ST1', status: 'ok' }, { from: 'DC1', to: 'ST2', status: 'rerouted' },
+      { from: 'DC1', to: 'ST3', status: 'rerouted' }, { from: 'DC2', to: 'ST4', status: 'ok' },
+    ],
+  },
+}
+// Efficient frontier — x: premium-freight cost ($K), y: service %, z: recovery hr
+export const SSR_FRONTIER = {
+  xLabel: 'Premium freight cost ($K)', yLabel: 'Service attainment (%)', zLabel: 'Recovery time (hr)',
+  points: [
+    { x: 420, y: 92.4, z: 96, label: 'Do nothing', tone: 'gray' },
+    { x: 285, y: 96.9, z: 54, label: 'MEIO Rebalance', tone: 'violet' },
+    { x: 330, y: 96.2, z: 49, label: 'Priority Reroute', tone: 'teal' },
+    { x: 240, y: 98.1, z: 42, label: 'Combined Recovery', tone: 'green', recommended: true },
+  ],
+}
+// Exact actions by execution workflow, per recommendation id
+export const SSR_WORKFLOW_ACTIONS = {
+  meio: {
+    WMS: ['Stage 63 inter-echelon transfer orders', 'Confirm DC dock / put-away capacity for inbound transfers'],
+    OMS: ['Resequence 126 priority store/SKU replenishment orders'],
+    APS: ['Recompute service-risk ranking', 'Apply +5% high-risk / −2% overstock safety stock'],
+  },
+  reroute: {
+    TMS: ['Reroute 27 at-risk loads to pre-approved alternate lanes', 'Carrier swap on 19 loads by tender acceptance'],
+    OMS: ['Hold non-urgent loads on current route plan'],
+    APS: ['Refresh ETA + service-window feasibility'],
+  },
+  combined: {
+    WMS: ['Stage 63 inter-echelon transfer orders (MEIO)', 'Confirm dock / put-away capacity'],
+    OMS: ['Resequence 126 priority replenishment orders', 'Raise reorder points 5–7% for priority pairs'],
+    TMS: ['Reroute 41 at-risk loads via alternate lanes', 'Carrier swap on 19 loads', 'Cap premium freight to top 10–15%'],
+    APS: ['Recompute service-risk ranking + safety-stock uplift', 'Publish revised replenishment plan to planners'],
+  },
+}
+// Screen 7 — Learn extensions
+export const SSR_LEARN = {
+  accuracy: [
+    { label: 'Overall prediction accuracy', value: '93%' },
+    { label: 'Service attainment', value: '±0.7 pts' },
+    { label: 'Recovery time', value: '±3 hr' },
+    { label: 'Premium freight', value: '±$18K' },
+  ],
+  recalibration: [
+    { label: 'Stockout-risk model', before: 'w=0.62', after: 'w=0.71', delta: '+time-to-need', note: 'Higher weight on time-to-need compression' },
+    { label: 'Transfer cycle-time prior', before: '46 hr', after: '49 hr', delta: '+3 hr', note: 'Two clusters ran longer than simulated' },
+    { label: 'Reroute feasibility model', before: '0.84', after: '0.88', delta: '+0.04', note: 'Outperformed simulation on 2 lanes' },
+  ],
+  patterns: [
+    'Supplier-B shortfalls consistently precede DC-01 inbound ETA breaches by ~36 hr.',
+    'Cluster-B/C service risk co-moves — a shared reroute covers both.',
+    'Premium freight is only needed for <15% of unrecoverable orders once MEIO runs first.',
+  ],
+  twin: { nodesEnriched: 126, lanesEnriched: 9, before: '76%', after: '90%', note: 'Store/lane digital twins updated with realized recovery outcomes' },
+}
+
 // ── Screen 6 — Approval & Execution ─────────────────────────────────────────
 export const SSR_APPROVAL = {
   selected: 'Combined Service Protection Recovery',
