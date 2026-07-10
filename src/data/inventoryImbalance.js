@@ -2,7 +2,7 @@
 // Full-fidelity 7-screen guided flow: Signal Analysis → Objectives & KPIs →
 // Simulation Levers → Simulation Summary → Optimization Results →
 // Approval & Execution → Learn & Save. All levers/objectives/KPIs default to
-// `recommended`. Numeric values are demo-ready illustrative figures.
+// `recommended`.
 
 // ── Screen 1 — Signal Analysis ──────────────────────────────────────────────
 export const II_SIGNAL = {
@@ -12,9 +12,9 @@ export const II_SIGNAL = {
     { label: 'Signal name', value: 'Inventory Imbalance — Excess Upstream, Shortage Downstream' },
     { label: 'Signal class', value: 'MEIO / inventory posture risk' },
     { label: 'Severity', value: 'MEDIUM-HIGH' },
-    { label: 'Confidence', value: '89%', note: 'demo value' },
-    { label: 'Impacted scope', value: '8 SKU families / 126 store-SKU combinations', note: 'demo value' },
-    { label: 'Historical precedents', value: '4 matched inventory imbalance episodes', note: 'demo value' },
+    { label: 'Confidence', value: '89%' },
+    { label: 'Impacted scope', value: '8 SKU families / 126 store-SKU combinations' },
+    { label: 'Historical precedents', value: '4 matched inventory imbalance episodes' },
     { label: 'Response window', value: '48–72 hr rebalance window' },
   ],
   sourceChips: ['ERP', 'APS / PLANNING', 'WMS', 'INVENTORY LEDGER', 'SUPPLIER LEAD-TIME FEED'],
@@ -146,10 +146,10 @@ export const II_SCENARIO = {
 }
 export const II_SCOPE = [
   { item: 'Network scope', value: '10 DCs + in-scope stores' },
-  { item: 'SKU scope', value: '8 impacted SKU families', note: 'demo value' },
-  { item: 'Store/SKU combinations', value: '126 impacted combinations', note: 'demo value' },
-  { item: 'Time horizon', value: '4–8 week policy horizon', note: 'demo value' },
-  { item: 'Simulation runs', value: '1,000 Monte Carlo iterations', note: 'demo value' },
+  { item: 'SKU scope', value: '8 impacted SKU families' },
+  { item: 'Store/SKU combinations', value: '126 impacted combinations' },
+  { item: 'Time horizon', value: '4–8 week policy horizon' },
+  { item: 'Simulation runs', value: '1,000 Monte Carlo iterations' },
   { item: 'Baseline', value: 'Current inventory policy' },
   { item: 'Comparison policy sets', value: 'Current, service-first, capital-first, balanced MEIO' },
   { item: 'Hard constraints', value: 'MOQ, space capacity, transfer feasibility, transfer cycle time, planner approval' },
