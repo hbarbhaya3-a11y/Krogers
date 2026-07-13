@@ -4,7 +4,7 @@ import {
   Card, Divider, ScrollArea, TextInput, Select,
 } from '@mantine/core'
 import {
-  IconSparkles, IconRoute2, IconRadar, IconUsers, IconChartBar,
+  IconRoute2, IconRadar, IconUsers, IconChartBar,
   IconLayoutGrid, IconCircleCheck, IconShieldCheck, IconRocket,
   IconTrendingUp, IconSearch, IconChevronRight, IconBolt,
   IconUsersGroup, IconSitemap, IconMathFunction, IconPencil,
@@ -50,8 +50,6 @@ const LIVE_SIGNALS = [
     metricStripLabel: 'Stores at risk',
     metricSub: 'priority store/SKU',
     tags: ['STORE SERVICE RISK', 'LOW INVENTORY COVER', 'DELAYED REPLENISHMENT', 'STOCKOUT PROBABILITY', 'SERVICE SENTINEL'],
-    precedents: 5,
-    precedentNote: null,
     confidence: 87,
     window: '24–72 hr service window',
     trendLabel: 'STORE SERVICE RISK TREND — At-Risk Stores / SKU-Locations',
@@ -79,8 +77,6 @@ const LIVE_SIGNALS = [
     metricStripLabel: 'SKU families impacted',
     metricSub: 'upstream excess / downstream risk',
     tags: ['BUFFER DUPLICATION', 'SAFETY STOCK IMBALANCE', 'ON-HAND SHORTAGE', 'UPSTREAM EXCESS', 'MEIO SENTINEL'],
-    precedents: 4,
-    precedentNote: null,
     confidence: 89,
     window: '48–72 hr rebalance window',
     trendLabel: 'INVENTORY IMBALANCE TREND — Upstream Excess vs Downstream Risk',
@@ -110,8 +106,6 @@ const LIVE_SIGNALS = [
     metricStripLabel: 'Delayed POs / ASNs',
     metricSub: 'high-volume DC',
     tags: ['SUPPLIER COMMITMENT VARIANCE', 'ASN REVISION EVENT', 'INBOUND ETA BREACH', 'HIGH-VOLUME DC', 'NETWORK SENTINEL'],
-    precedents: 3,
-    precedentNote: null,
     confidence: 91,
     window: '24–48 hr recovery window',
     trendLabel: 'INBOUND DELAY EXPOSURE TREND — Supplier → DC Flow',
@@ -139,8 +133,6 @@ const LIVE_SIGNALS = [
     metricStripLabel: 'Capacity variance',
     metricSub: 'below required flow',
     tags: ['DC THROUGHPUT CONSTRAINT', 'DOCK OCCUPANCY RISING', 'BACKLOG SPIKE', 'CAPACITY DERATE', 'FLOW SENTINEL'],
-    precedents: 4,
-    precedentNote: null,
     confidence: 88,
     window: '12–24 hr response window',
     trendLabel: 'DC THROUGHPUT STRESS TREND — Planned vs Available Capacity',
@@ -168,8 +160,6 @@ const LIVE_SIGNALS = [
     metricStripLabel: 'At-risk loads',
     metricSub: 'premium freight exposure',
     tags: ['ETA BREACH RISK', 'TIME-TO-NEED COMPRESSION', 'PREMIUM FREIGHT RISK', 'CARRIER ACCEPTANCE RISK', 'COST SENTINEL'],
-    precedents: 2,
-    precedentNote: 'Limited history',
     confidence: 84,
     window: '24 hr cost-control window',
     trendLabel: 'PREMIUM FREIGHT RISK TREND — At-Risk Loads',
@@ -299,32 +289,6 @@ export default function UseCaseCatalog({ onRunScenario }) {
 
   return (
     <Stack gap="lg">
-      {/* ── Header banner ──────────────────────────────────────────────── */}
-      <Card withBorder radius="md" p="md" style={{ borderLeft: '3px solid var(--mantine-color-vanguardRed-6)' }}>
-        <Group justify="space-between" align="flex-start" wrap="wrap" gap="xs">
-          <Box>
-            <Group gap="xs" mb={4}>
-              <ThemeIcon size={22} radius="md" variant="gradient" gradient={{ from: '#96151D', to: '#C0392B', deg: 135 }}>
-                <IconSparkles size={12} color="white" />
-              </ThemeIcon>
-              <Text fw={800} size="sm" tt="uppercase" style={{ letterSpacing: '0.06em' }}>
-                Supply Chain Resilience Signals for Kroger's Network
-              </Text>
-            </Group>
-            <Text size="xs" c="dimmed" maw={580}>
-              Network Flow & Resilience · MEIO optimization · reroute, rebalance & premium-freight avoidance
-            </Text>
-          </Box>
-          <Group gap="xs" wrap="wrap">
-            {['Simulation-Native', '6-Stage Lifecycle', 'Guided & Autopilot Modes', 'Closed-Loop Learning'].map(t => (
-              <Badge key={t} variant="outline" color="vanguardRed" size="xs" style={{ letterSpacing: '0.04em', fontWeight: 600 }}>
-                {t}
-              </Badge>
-            ))}
-          </Group>
-        </Group>
-      </Card>
-
       {/* ════════════════ LIVE SIGNALS ════════════════════════════════ */}
       <Group align="flex-start" gap="md" wrap="nowrap" style={{ minHeight: 600 }}>
           {/* ── Signal list ───────────────────────────────── */}
@@ -381,8 +345,6 @@ export default function UseCaseCatalog({ onRunScenario }) {
                           <IconUsers size={11} />
                           <Text size="10px">{sig.metricValue} {sig.metricUnit}</Text>
                         </Group>
-                        <Text size="10px" c="dimmed">·</Text>
-                        <Text size="10px">{sig.precedents} precedents</Text>
                       </Group>
                       <Group justify="space-between" align="center">
                         <Text size="9px" c="dimmed">{sig.sourceChip.split('·')[0].trim()}</Text>
@@ -426,15 +388,6 @@ export default function UseCaseCatalog({ onRunScenario }) {
                   <Text fw={800} size="xl" c={selectedSignal.severityColor}>{selectedSignal.metricValue}</Text>
                   <Text size="10px" c="dimmed">{selectedSignal.metricStripLabel}</Text>
                   <Text size="10px" c="dimmed">{selectedSignal.metricSub}</Text>
-                </Box>
-                <Box>
-                  <Text fw={800} size="xl" c={selectedSignal.precedentNote ? 'orange' : 'dark'}>
-                    {selectedSignal.precedents}
-                  </Text>
-                  <Text size="10px" c="dimmed">Historical precedents</Text>
-                  {selectedSignal.precedentNote && (
-                    <Text size="10px" c="orange">{selectedSignal.precedentNote}</Text>
-                  )}
                 </Box>
               </Group>
 

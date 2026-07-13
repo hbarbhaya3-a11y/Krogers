@@ -1,6 +1,5 @@
-// TwinX for Vanguard Personal Wealth — Use Case Definitions
-// Five end-to-end signal scenarios for the Personal Wealth cross-sell demo
-// Lead scenario: UC-1 Advisory Readiness Gap (recommended for Spencer demo)
+// TwinX for Kroger Supply Chain Resilience — Use Case Definitions
+// Seven end-to-end signal scenarios for supply chain network optimization
 
 // ── Shared Personal Wealth compliance rails ─────────────────────────────────
 const PERSONAL_WEALTH_RAILS = [

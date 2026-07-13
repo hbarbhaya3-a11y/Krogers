@@ -2,7 +2,7 @@
 // Full-fidelity 7-screen guided flow: Signal Analysis → Objectives & KPIs →
 // Simulation Levers → Simulation Summary → Optimization Results →
 // Approval & Execution → Learn & Save. All levers/objectives/KPIs default to
-// `recommended`. Numeric values are demo-ready illustrative figures.
+// `recommended`.
 
 // ── Screen 1 — Signal Analysis ──────────────────────────────────────────────
 export const II_SIGNAL = {
@@ -12,9 +12,9 @@ export const II_SIGNAL = {
     { label: 'Signal name', value: 'Inventory Imbalance — Excess Upstream, Shortage Downstream' },
     { label: 'Signal class', value: 'MEIO / inventory posture risk' },
     { label: 'Severity', value: 'MEDIUM-HIGH' },
-    { label: 'Confidence', value: '89%', note: 'demo value' },
-    { label: 'Impacted scope', value: '8 SKU families / 126 store-SKU combinations', note: 'demo value' },
-    { label: 'Historical precedents', value: '4 matched inventory imbalance episodes', note: 'demo value' },
+    { label: 'Confidence', value: '89%' },
+    { label: 'Impacted scope', value: '8 SKU families / 126 store-SKU combinations' },
+    { label: 'Historical precedents', value: '4 matched inventory imbalance episodes' },
     { label: 'Response window', value: '48–72 hr rebalance window' },
   ],
   sourceChips: ['ERP', 'APS / PLANNING', 'WMS', 'INVENTORY LEDGER', 'SUPPLIER LEAD-TIME FEED'],
@@ -87,9 +87,7 @@ export const II_LEVER_GROUPS = [
     group: 'A', title: 'Safety-stock & target-stock levers', color: 'orange',
     levers: [
       { id: 'ssRightSize', label: 'Safety-stock right-sizing', control: 'select', options: ['Current policy', 'Reduce upstream/DC by 8–12%', 'Reduce upstream/DC by 15%'], recommended: 'Reduce upstream/DC by 8–12%' },
-      { id: 'storeSSUplift', label: 'Store safety-stock uplift', control: 'select', options: ['Current policy', '+3–5% priority store/SKU', '+8% priority store/SKU'], recommended: '+3–5% priority store/SKU' },
       { id: 'targetStock', label: 'Target stock by echelon', control: 'select', options: ['Current target stock', 'Shift closer to demand nodes'], recommended: 'Shift closer to demand nodes' },
-      { id: 'dosBand', label: 'Days-of-supply band', control: 'select', options: ['Current DOS', 'Min/max DOS by SKU velocity'], recommended: 'Min/max DOS by SKU velocity' },
       { id: 'serviceByCat', label: 'Service target by category', control: 'select', options: ['Current target', '98% priority / 96% standard'], recommended: '98% priority / 96% standard' },
     ],
   },
@@ -104,33 +102,12 @@ export const II_LEVER_GROUPS = [
     ],
   },
   {
-    group: 'C', title: 'Reorder & replenishment policy levers', color: 'teal',
-    levers: [
-      { id: 'reorderTuning', label: 'Reorder point tuning', control: 'select', options: ['Current policy', '+5–7% priority SKU-locations'], recommended: '+5–7% priority SKU-locations' },
-      { id: 'reviewCadence', label: 'Review cadence', control: 'select', options: ['Current cadence', 'Higher-frequency for volatile SKUs'], recommended: 'Higher-frequency for volatile SKUs' },
-      { id: 'replenFreq', label: 'Replenishment frequency', control: 'select', options: ['Current frequency', 'Increase for priority SKUs'], recommended: 'Increase for priority SKUs' },
-      { id: 'moq', label: 'MOQ constraint', control: 'select', options: ['Editable', 'Locked (hard constraint)'], recommended: 'Locked (hard constraint)' },
-      { id: 'storeSpace', label: 'Store space constraint', control: 'select', options: ['Editable', 'Locked (hard constraint)'], recommended: 'Locked (hard constraint)' },
-    ],
-  },
-  {
-    group: 'D', title: 'Uncertainty & risk levers', color: 'blue',
+    group: 'C', title: 'Uncertainty & risk levers', color: 'blue',
     levers: [
       { id: 'demandStress', label: 'Demand variability stress', control: 'select', options: ['+0%', '+10%', '+20%', '+30%'], recommended: '+20%' },
       { id: 'leadTimeStress', label: 'Lead-time variability stress', control: 'select', options: ['+0%', '+20%', '+30%'], recommended: '+20%' },
       { id: 'stockoutTrigger', label: 'Stockout risk threshold', control: 'select', options: ['>25% risk', '>20% risk', '>15% risk'], recommended: '>15% risk' },
-      { id: 'slowMover', label: 'Slow-mover threshold', control: 'select', options: ['Current velocity rule', 'Flag SKUs below movement threshold'], recommended: 'Flag SKUs below movement threshold' },
       { id: 'transferViability', label: 'Transfer viability threshold', control: 'select', options: ['70% feasibility', '80% feasibility', '90% feasibility'], recommended: '80% feasibility' },
-    ],
-  },
-  {
-    group: 'E', title: 'Financial guardrail levers', color: 'green',
-    levers: [
-      { id: 'carryingCost', label: 'Carrying-cost assumption', control: 'select', options: ['Finance-approved baseline', 'Custom assumption'], recommended: 'Finance-approved baseline' },
-      { id: 'wcTarget', label: 'Working-capital release target', control: 'select', options: ['No target', 'Exploratory target ($100M scenario)'], recommended: 'Exploratory target ($100M scenario)' },
-      { id: 'shortageProxy', label: 'Shortage proxy cost', control: 'select', options: ['Current proxy', 'Increase for priority SKUs'], recommended: 'Increase for priority SKUs' },
-      { id: 'transferCost', label: 'Transfer cost', control: 'select', options: ['Current transfer cost', 'Use actual route/node transfer cost'], recommended: 'Use actual route/node transfer cost' },
-      { id: 'maxReductionCap', label: 'Max inventory reduction cap', control: 'select', options: ['None', 'Cap at service-safe level'], recommended: 'Cap at service-safe level' },
     ],
   },
 ]
@@ -146,10 +123,10 @@ export const II_SCENARIO = {
 }
 export const II_SCOPE = [
   { item: 'Network scope', value: '10 DCs + in-scope stores' },
-  { item: 'SKU scope', value: '8 impacted SKU families', note: 'demo value' },
-  { item: 'Store/SKU combinations', value: '126 impacted combinations', note: 'demo value' },
-  { item: 'Time horizon', value: '4–8 week policy horizon', note: 'demo value' },
-  { item: 'Simulation runs', value: '1,000 Monte Carlo iterations', note: 'demo value' },
+  { item: 'SKU scope', value: '8 impacted SKU families' },
+  { item: 'Store/SKU combinations', value: '126 impacted combinations' },
+  { item: 'Time horizon', value: '4–8 week policy horizon' },
+  { item: 'Simulation runs', value: '1,000 Monte Carlo iterations' },
   { item: 'Baseline', value: 'Current inventory policy' },
   { item: 'Comparison policy sets', value: 'Current, service-first, capital-first, balanced MEIO' },
   { item: 'Hard constraints', value: 'MOQ, space capacity, transfer feasibility, transfer cycle time, planner approval' },
