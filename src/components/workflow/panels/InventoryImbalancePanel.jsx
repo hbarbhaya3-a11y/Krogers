@@ -132,6 +132,22 @@ function StrategyModal({ reco, onClose }) {
                 </Table>
               </Box>
             )}
+            {D.II_TRANSFERS[reco.id] && (
+              <Box>
+                <Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>Transfer plan — DC-to-store & cross-echelon moves</Text>
+                <Table fz="xs" withTableBorder withColumnBorders striped>
+                  <Table.Thead><Table.Tr><Table.Th>From</Table.Th><Table.Th>To</Table.Th><Table.Th>SKU family</Table.Th><Table.Th>Quantity</Table.Th><Table.Th>Mode</Table.Th><Table.Th>Viability</Table.Th></Table.Tr></Table.Thead>
+                  <Table.Tbody>{D.II_TRANSFERS[reco.id].map((t, i) => (
+                    <Table.Tr key={i}>
+                      <Table.Td fw={600}>{t.from}</Table.Td><Table.Td fw={600} c={reco.tone}>{t.to}</Table.Td>
+                      <Table.Td>{t.sku}</Table.Td><Table.Td fw={600}>{t.qty}</Table.Td>
+                      <Table.Td><Badge size="xs" variant="light" color={t.mode.startsWith('DC→') ? 'green' : t.mode.startsWith('Cross') ? 'violet' : 'blue'}>{t.mode}</Badge></Table.Td>
+                      <Table.Td fw={700} c="green">{t.viability}</Table.Td>
+                    </Table.Tr>
+                  ))}</Table.Tbody>
+                </Table>
+              </Box>
+            )}
             {D.II_OPTIMIZATION[reco.id] && (
               <Box>
                 <Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>Inventory policy optimization</Text>
@@ -144,6 +160,13 @@ function StrategyModal({ reco, onClose }) {
                 </Table>
               </Box>
             )}
+            <Box>
+              <Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>SKU-family imbalance heatmap — before vs after (echelon × SKU family, vs policy)</Text>
+              <SimpleGrid cols={2} spacing="md">
+                <Paper withBorder p="sm" radius="md"><Badge size="xs" color="orange" variant="light" mb="xs">Before</Badge><InventoryHeatmap {...D.II_HEATMAP} /></Paper>
+                <Paper withBorder p="sm" radius="md" style={{ borderLeft: '3px solid var(--mantine-color-green-5)' }}><Badge size="xs" color="green" variant="light" mb="xs">After optimization</Badge><InventoryHeatmap {...D.II_HEATMAP_AFTER} /></Paper>
+              </SimpleGrid>
+            </Box>
             <Box>
               <Text fw={700} size="xs" c="dimmed" tt="uppercase" mb={4}>Inventory movement — before vs after (units on-hand)</Text>
               <SimpleGrid cols={2} spacing="md">

@@ -307,6 +307,40 @@ export const II_HEATMAP = {
     [-11, -7, -15, -8, -4, -2, -3, -6],
   ],
 }
+// Residual SKU-family imbalance after the balanced optimization (smaller magnitudes,
+// buffers moved closer to policy). Same rows/cols grid as II_HEATMAP.
+export const II_HEATMAP_AFTER = {
+  rows: ['Supplier', 'DC-01', 'DC-02', 'Store Cluster A', 'Store Cluster B'],
+  cols: ['Dairy', 'Frozen', 'Bev', 'Dry', 'Snacks', 'Produce', 'Bakery', 'Meat'],
+  cells: [
+    [3, 2, 4, 1, 1, 0, 1, 1],
+    [5, 6, 4, 3, 2, 1, 2, 2],
+    [3, 2, 3, 2, 1, 0, 1, 2],
+    [-3, -2, -4, -1, 0, 0, 0, -1],
+    [-2, -1, -3, -2, -1, 0, -1, -1],
+  ],
+}
+// Transfer plan per recommendation id — DC-to-store, cross-echelon & lateral moves.
+// mode: 'DC→Store' | 'Cross-echelon' | 'Lateral (DC→DC)'; qty in units; viability %.
+export const II_TRANSFERS = {
+  'ss-rightsize': [
+    { from: 'DC-01', to: 'Store Cluster A (32 st)', sku: 'Dairy', qty: '1,800', mode: 'DC→Store', viability: '86%' },
+    { from: 'DC-02', to: 'Store Cluster B (28 st)', sku: 'Beverages', qty: '1,500', mode: 'DC→Store', viability: '82%' },
+  ],
+  dedup: [
+    { from: 'DC-02', to: 'Store Cluster C (24 st)', sku: 'Dry grocery', qty: '6,400', mode: 'DC→Store', viability: '88%' },
+    { from: 'DC-05', to: 'Store Cluster A (32 st)', sku: 'Beverages', qty: '5,200', mode: 'DC→Store', viability: '84%' },
+    { from: 'DC-01', to: 'DC-07', sku: 'Dairy', qty: '3,600', mode: 'Cross-echelon', viability: '81%' },
+    { from: 'DC-07', to: 'DC-02', sku: 'Snacks', qty: '2,900', mode: 'Lateral (DC→DC)', viability: '80%' },
+  ],
+  balanced: [
+    { from: 'DC-02', to: 'Store Cluster C (24 st)', sku: 'Dry grocery', qty: '6,400', mode: 'DC→Store', viability: '88%' },
+    { from: 'DC-05', to: 'Store Cluster A (32 st)', sku: 'Beverages', qty: '5,200', mode: 'DC→Store', viability: '84%' },
+    { from: 'DC-01 / DC-04', to: 'DC-02 / DC-06', sku: 'Dairy, Frozen', qty: '4,100', mode: 'Cross-echelon', viability: '83%' },
+    { from: 'DC-03', to: 'Store Clusters A/B (60 st)', sku: 'Priority SKUs', qty: '3,300', mode: 'DC→Store', viability: '82%' },
+    { from: 'DC-07', to: 'DC-02', sku: 'Snacks', qty: '2,900', mode: 'Lateral (DC→DC)', viability: '80%' },
+  ],
+}
 // Inventory location by echelon (on-hand vs policy target, units)
 export const II_INV_LOCATION = [
   { label: 'Supplier A', type: 'supplier', onHand: 9200, policy: 8000 },
