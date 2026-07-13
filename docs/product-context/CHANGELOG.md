@@ -5,6 +5,19 @@
 
 ---
 
+## Session 6 — MEIO strategy-details: SKU-family heatmap + transfer plan — 2026-07-13
+
+### Build Status
+- `npm run build` — **PASSED** — built in 9.87s, 0 errors.
+
+### Added
+- **Signal 2 (Inventory Imbalance / MEIO) — richer "View strategy details" modal** (`InventoryImbalancePanel.jsx`, `src/data/inventoryImbalance.js`)
+  - Added a **before-vs-after SKU-family imbalance heatmap** (echelon × SKU family, vs policy) inside the strategy-details modal. New data export `II_HEATMAP_AFTER` shows residual imbalance after the optimization alongside the existing `II_HEATMAP`.
+  - Added a per-recommendation **Transfer plan table** — From / To / SKU family / Quantity / Mode / Viability — covering DC-to-store, cross-echelon, and lateral (DC→DC) transfers. New data export `II_TRANSFERS` keyed by recommendation id (`ss-rightsize`, `dedup`, `balanced`); mode chips color-coded (DC→Store green, Cross-echelon violet, Lateral blue).
+  - Verified via `npm run build`.
+
+---
+
 ## Session 5 — Rebrand to Supply OS for Kroger + Supply-Chain Signals — 2026-07-08
 
 ### Build Status
